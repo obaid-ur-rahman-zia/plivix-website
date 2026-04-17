@@ -1,7 +1,7 @@
 "use client";
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { EffectComposer, Bloom, Vignette } from "@react-three/postprocessing";
+import { EffectComposer, Vignette } from "@react-three/postprocessing";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 
@@ -40,45 +40,47 @@ const COL = {
  *     the cursor (Y rotation on X-axis mouse, X rotation on Y-axis mouse).
  *   - Camera rig still dollies/sways subtly with scroll progress.
  */
-export default function HeroCanvas({ progressRef, theme = "dark" }) {
+export default function HeroCanvas({ progressRef, theme = "dark", isMobile = false }) {
   const [ready, setReady] = useState(false);
   useEffect(() => setReady(true), []);
   if (!ready) return null;
 
   const mode = theme === "light" ? "light" : "dark";
   const pal = COL[mode];
+  const exposure = isMobile
+    ? mode === "light"
+      ? 0.88
+      : 0.82
+    : mode === "light"
+      ? 1.02
+      : 1.15;
 
   return (
     <Canvas
-      dpr={[1, 1.5]}
+      dpr={isMobile ? [1, 1] : [1, 1.5]}
       gl={{
         antialias: true,
         alpha: true,
         powerPreference: "high-performance",
         stencil: false,
         toneMapping: THREE.ACESFilmicToneMapping,
-        toneMappingExposure: mode === "light" ? 1.02 : 1.15,
+        toneMappingExposure: exposure,
       }}
-      camera={{ position: [0, 0, 5.2], fov: 38 }}
+      camera={{ position: [0, 0, 5.2], fov: isMobile ? 40 : 38 }}
       style={{ background: "transparent" }}
     >
-      <ambientLight intensity={pal.ambient} />
+      <ambientLight intensity={isMobile ? pal.ambient * 0.85 : pal.ambient} />
 
       <Suspense fallback={null}>
         <CameraRig progressRef={progressRef} />
-        <PlivixLogoParticles palette={pal} mode={mode} />
+        <PlivixLogoParticles palette={pal} mode={mode} isMobile={isMobile} />
       </Suspense>
 
-      <EffectComposer multisampling={0} disableNormalPass>
-        {/* <Bloom
-          intensity={pal.bloom}
-          luminanceThreshold={pal.bloomThreshold}
-          luminanceSmoothing={0.9}
-          mipmapBlur
-          radius={mode === "light" ? 0.38 : 0.7}
-        /> */}
-        <Vignette eskil={false} offset={0.16} darkness={pal.vignette} />
-      </EffectComposer>
+      {!isMobile && (
+        <EffectComposer multisampling={0} disableNormalPass>
+          <Vignette eskil={false} offset={0.16} darkness={pal.vignette} />
+        </EffectComposer>
+      )}
     </Canvas>
   );
 }
@@ -105,6 +107,8 @@ const VERT = /* glsl */ `
 
   uniform float uTime;
   uniform float uPixel;
+  uniform float uPointMul;
+  uniform float uAlphaGlobal;
 
   varying float vAlpha;
 
@@ -120,11 +124,10 @@ const VERT = /* glsl */ `
     vec4 mv = modelViewMatrix * vec4(pos, 1.0);
     gl_Position = projectionMatrix * mv;
 
-    // Much larger base size than before — user asked for bigger particles.
     float dist = -mv.z;
-    gl_PointSize = aScale * uPixel * (22.0 / max(dist, 0.1));
+    gl_PointSize = aScale * uPixel * (22.0 / max(dist, 0.1)) * uPointMul;
 
-    vAlpha = 0.7 + 0.3 * aScale;
+    vAlpha = (0.7 + 0.3 * aScale) * uAlphaGlobal;
   }
 `;
 
@@ -144,7 +147,7 @@ const FRAG = /* glsl */ `
   }
 `;
 
-function PlivixLogoParticles({ palette, mode }) {
+function PlivixLogoParticles({ palette, mode, isMobile }) {
   const groupRef = useRef(null);
   const matRef = useRef(null);
   const pointer = useRef({ x: 0, y: 0 });
@@ -165,8 +168,9 @@ function PlivixLogoParticles({ palette, mode }) {
       if (cancelled) return;
 
       const isSmall = typeof window !== "undefined" && window.innerWidth < 768;
-      // Denser than before: 2px stride desktop, 3px mobile.
-      const stride = isSmall ? 3 : 2;
+      // Desktop: 2px stride. Mobile: 5px — far fewer points so the mark
+      // stays readable and doesn’t “solid blob” from overlap.
+      const stride = isSmall ? 5 : 2;
 
       // Work in a fixed-size canvas preserving the logo's aspect ratio.
       const naturalAR = (img.naturalWidth || img.width) / (img.naturalHeight || img.height);
@@ -190,21 +194,20 @@ function PlivixLogoParticles({ palette, mode }) {
 
       // Scale so the mark fills most of the camera's viewport height.
       // Camera at z=5.2, fov=38° → visible height ≈ 2 * 5.2 * tan(19°) ≈ 3.58.
-      // Target the mark at ~2.8 world units tall so it reads large.
-      const worldH = 2.8;
+      const worldH = isSmall ? 1.95 : 2.8;
       const s = worldH / H;
+      const alphaCut = isSmall ? 168 : 140;
 
       const pts = [];
       for (let y = 0; y < H; y += stride) {
         for (let x = 0; x < W; x += stride) {
           const i = (y * W + x) * 4;
-          if (data[i + 3] > 140) {
+          if (data[i + 3] > alphaCut) {
             const wx = (x - W / 2) * s;
             const wy = -(y - H / 2) * s;
-            // Light fuzzy-edge jitter — keeps the cloud from looking stamped.
             const jx = (Math.random() - 0.5) * 0.02;
             const jy = (Math.random() - 0.5) * 0.02;
-            const jz = (Math.random() - 0.5) * 0.32;
+            const jz = (Math.random() - 0.5) * (isSmall ? 0.16 : 0.32);
             pts.push(wx + jx, wy + jy, jz);
           }
         }
@@ -216,8 +219,11 @@ function PlivixLogoParticles({ palette, mode }) {
       const scales = new Float32Array(count);
       for (let i = 0; i < count; i++) {
         seeds[i] = Math.random();
-        // Wider size variation: most particles are substantial, a few twinkle big.
-        scales[i] = 0.95 + Math.random() * Math.random() * 1.9;
+        if (isSmall) {
+          scales[i] = 0.72 + Math.random() * Math.random() * 1.1;
+        } else {
+          scales[i] = 0.95 + Math.random() * Math.random() * 1.9;
+        }
       }
       setGeom({ positions, seeds, scales, count });
     };
@@ -247,9 +253,10 @@ function PlivixLogoParticles({ palette, mode }) {
             ? Math.min(window.devicePixelRatio || 1, 2)
             : 1,
       },
+      uPointMul: { value: isMobile ? 0.36 : 1 },
+      uAlphaGlobal: { value: isMobile ? 0.48 : 1 },
     }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [isMobile]
   );
 
   useFrame((_, delta) => {
@@ -258,9 +265,10 @@ function PlivixLogoParticles({ palette, mode }) {
     pointer.current.y += (target.current.y - pointer.current.y) * ease;
 
     if (groupRef.current) {
-      // Tilt the cloud toward the cursor. NO auto rotation.
-      groupRef.current.rotation.y = pointer.current.x * 0.55;
-      groupRef.current.rotation.x = pointer.current.y * 0.32;
+      const ry = isMobile ? 0.38 : 0.55;
+      const rx = isMobile ? 0.22 : 0.32;
+      groupRef.current.rotation.y = pointer.current.x * ry;
+      groupRef.current.rotation.x = pointer.current.y * rx;
     }
     if (matRef.current) {
       matRef.current.uniforms.uTime.value += delta;
@@ -269,22 +277,23 @@ function PlivixLogoParticles({ palette, mode }) {
   });
 
   const material = useMemo(() => {
+    const useAdditive = !isMobile && mode !== "light";
     return new THREE.ShaderMaterial({
       vertexShader: VERT,
       fragmentShader: FRAG,
       transparent: true,
       depthWrite: false,
-      // Additive on dark gives the glow look; normal on light keeps the deep
-      // indigo readable against a near-white backdrop.
-      blending: mode === "light" ? THREE.NormalBlending : THREE.AdditiveBlending,
+      blending: useAdditive ? THREE.AdditiveBlending : THREE.NormalBlending,
       uniforms,
     });
-  }, [mode, uniforms]);
+  }, [isMobile, mode, uniforms]);
 
   if (!geom) return null;
 
+  const groupScale = isMobile ? 1.58 : 1.15;
+
   return (
-    <group ref={groupRef} scale={1.15}>
+    <group ref={groupRef} scale={groupScale}>
       <points>
         <bufferGeometry>
           <bufferAttribute

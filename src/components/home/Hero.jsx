@@ -36,7 +36,15 @@ export default function Hero() {
   const contentRef = useRef(null);
   const progressRef = useRef(0);
   const [capIdx, setCapIdx] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
   const { resolved: theme } = useTheme();
+
+  useEffect(() => {
+    const mq = () => setIsMobile(window.innerWidth < 768);
+    mq();
+    window.addEventListener("resize", mq, { passive: true });
+    return () => window.removeEventListener("resize", mq);
+  }, []);
 
   /* Scroll progress: 0 at top of page, 1 after one viewport of scroll. */
   useEffect(() => {
@@ -90,19 +98,19 @@ export default function Hero() {
     <section
       ref={sectionRef}
       className="hero relative w-full isolate overflow-hidden"
-      style={{ height: "100svh", minHeight: "640px" }}
+      style={{ height: "100svh", minHeight: "min(100svh, 640px)" }}
     >
       {/* ───── BACKDROP ───── */}
       <div aria-hidden className="pointer-events-none absolute inset-0 hero-bg-dark" />
-      <div aria-hidden className="pointer-events-none absolute inset-0 hero-bg-light" />
-      <div aria-hidden className="pointer-events-none absolute inset-0 hero-chroma-bleed" />
+      {/* <div aria-hidden className="pointer-events-none absolute inset-0 hero-bg-light" /> */}
+      {/* <div aria-hidden className="pointer-events-none absolute inset-0 hero-chroma-bleed" /> */}
 
-      {/* 3D scene — right column on desktop, bottom band on mobile */}
+      {/* 3D scene — right column on desktop; on mobile: short bottom strip so it never covers CTAs/chips */}
       <div
         aria-hidden
-        className="pointer-events-none z-[1] absolute bottom-0 right-0 h-[min(38vh,300px)] w-full sm:h-[min(44vh,360px)] lg:bottom-auto lg:top-0 lg:h-full lg:w-[min(50%,620px)]"
+        className="pointer-events-none z-[1] absolute bottom-0 left-1/2 w-[min(88%,360px)] -translate-x-1/2 h-[min(18vh,148px)] sm:h-[min(28vh,220px)] sm:left-auto sm:translate-x-0 sm:right-0 sm:w-full md:h-[min(38vh,320px)] lg:bottom-auto lg:top-0 lg:left-auto lg:h-full lg:w-[min(50%,620px)]"
       >
-        <HeroCanvas progressRef={progressRef} theme={theme} />
+        <HeroCanvas progressRef={progressRef} theme={theme} isMobile={isMobile} />
       </div>
 
       {/* Grain */}
@@ -128,9 +136,9 @@ export default function Hero() {
       {/* ───── CONTENT ───── */}
       <div
         ref={contentRef}
-        className="absolute inset-0 z-[2] grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 container-edge pt-20 md:pt-24 pb-8 md:pb-10 will-change-[transform,opacity]"
+        className="absolute inset-0 z-[3] grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 lg:gap-8 container-edge pt-[4.5rem] sm:pt-20 md:pt-24 pb-[min(28vh,220px)] lg:pb-10 will-change-[transform,opacity]"
       >
-        <div className="lg:col-span-7 flex flex-col min-w-0 min-h-0 ">
+        <div className="lg:col-span-7 flex flex-col min-w-0 min-h-0 relative max-lg:gap-5">
           {/* Availability pill */}
           <div data-fade className="flex shrink-0">
             <span className="inline-flex items-center gap-2.5 rounded-full border border-[var(--color-line-strong)] bg-[var(--color-bg-elev)]/60 backdrop-blur-md px-3.5 py-1.5 font-mono text-[11px] tracking-[0.04em] uppercase text-[var(--color-fg-muted)]">
@@ -139,8 +147,8 @@ export default function Hero() {
             </span>
           </div>
 
-          {/* Headline */}
-          <div className="flex-1 flex flex-col justify-center gap-5 md:gap-6 py-4 md:py-6 min-h-0">
+          {/* Headline — on mobile: no flex-1 grow so CTAs/chips never compress into each other */}
+          <div className="flex flex-col justify-start lg:justify-center gap-4 sm:gap-5 md:gap-6 py-2 sm:py-4 md:py-6 min-h-0 max-lg:flex-none lg:flex-1">
             <h1 className="font-display font-semibold text-[var(--color-fg)] tracking-[-0.035em] text-[clamp(2rem,min(5.6vw,9.5svh),4.75rem)] flex flex-col gap-[0.12em] shrink-0 [line-height:1.02]">
               <span className="block overflow-hidden py-[0.04em] [line-height:inherit]">
                 <span className="hero-line block [line-height:inherit]">Engineering</span>
@@ -162,11 +170,14 @@ export default function Hero() {
               performance-obsessed, and backed by senior engineering.
             </p>
 
-            <div data-fade className="flex flex-wrap items-center gap-3 md:gap-4">
+            <div
+              data-fade
+              className="flex flex-col max-lg:w-full max-lg:gap-3 sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-2.5 sm:gap-3 md:gap-4 max-lg:relative max-lg:z-[1]"
+            >
               <Link
                 href="/contact"
                 data-cursor="hover"
-                className="group inline-flex items-center gap-2.5 rounded-full bg-[var(--color-accent)] text-[var(--color-on-accent)] px-5 md:px-6 py-3 md:py-3.5 text-sm font-medium transition-all hover:bg-[var(--color-accent-hover)] hover:shadow-[0_8px_30px_color-mix(in_oklab,var(--color-accent)_45%,transparent)]"
+                className="group inline-flex w-full sm:w-auto justify-center items-center gap-2.5 rounded-full bg-[var(--color-accent)] text-[var(--color-on-accent)] px-5 md:px-6 py-3 md:py-3.5 text-sm font-medium transition-all hover:bg-[var(--color-accent-hover)] hover:shadow-[0_8px_30px_color-mix(in_oklab,var(--color-accent)_45%,transparent)]"
               >
                 Start a project
                 <span aria-hidden className="transition-transform duration-300 group-hover:translate-x-1">→</span>
@@ -174,7 +185,7 @@ export default function Hero() {
               <Link
                 href="/portfolio"
                 data-cursor="hover"
-                className="group inline-flex items-center gap-2.5 rounded-full border border-[var(--color-line-strong)] text-[var(--color-fg)] px-5 md:px-6 py-3 md:py-3.5 text-sm font-medium hover:border-[var(--color-fg)] transition-colors"
+                className="group inline-flex w-full sm:w-auto justify-center items-center gap-2.5 rounded-full border border-[var(--color-line-strong)] text-[var(--color-fg)] px-5 md:px-6 py-3 md:py-3.5 text-sm font-medium hover:border-[var(--color-fg)] transition-colors"
               >
                 See our work
                 <span aria-hidden className="transition-transform duration-300 group-hover:translate-x-1">→</span>
@@ -182,8 +193,11 @@ export default function Hero() {
             </div>
           </div>
 
-          {/* Capability chips */}
-          <div data-fade className="flex flex-wrap items-center gap-2 md:gap-2.5 shrink-0 pt-4">
+          {/* Capability chips — own row below CTAs so nothing overlaps on narrow screens */}
+          <div
+            data-fade
+            className="flex flex-wrap items-center gap-2 md:gap-2.5 shrink-0 max-lg:mt-1 max-lg:border-t max-lg:border-[var(--color-line)] max-lg:pt-5 sm:pt-4 max-lg:relative max-lg:z-[1]"
+          >
             <span className="font-mono text-[11px] uppercase tracking-[0.08em] text-[var(--color-fg-muted)] mr-1 md:mr-3">
               / Services
             </span>

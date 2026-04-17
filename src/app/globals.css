@@ -129,7 +129,7 @@ html {
 /* Hide the native cursor on fine-pointer devices (desktop with mouse).
    The custom dot+ring Cursor component takes over. Touch devices keep
    their default cursor (no pointer:fine match). */
-@media (hover: hover) and (pointer: fine) {
+/* @media (hover: hover) and (pointer: fine) {
   html,
   body,
   *,
@@ -141,7 +141,7 @@ html {
   [role="button"] {
     cursor: none !important;
   }
-}
+} */
 
 body {
   margin: 0;
@@ -554,7 +554,7 @@ body::-webkit-scrollbar-thumb {
 .text-chroma {
   background-image: linear-gradient(
     110deg,
-    var(--chroma-pink) 0%,
+    var(--chroma-cyan) 0%,
     var(--chroma-violet) 45%,
     var(--color-accent) 70%,
     var(--chroma-cyan) 100%
