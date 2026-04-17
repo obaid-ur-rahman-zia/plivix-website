@@ -225,7 +225,7 @@ export default function Hero() {
                 Plivix Technologies
               </span>
               <span className="font-mono text-[11px] text-[var(--color-fg-muted)] hidden sm:block">
-                Lahore → Global · est. 2024
+                Sargodha → Global · est. 2024
               </span>
             </div>
             <div className="flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.08em] text-[var(--color-fg-muted)]">

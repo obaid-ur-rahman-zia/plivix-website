@@ -162,7 +162,7 @@ export default function ProjectsShowcase({ projects = [] }) {
                   data-cursor="hover"
                   className="flex min-h-0 flex-1 flex-col focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)] rounded-sm"
                 >
-                  <div className="relative flex-1 min-h-0 overflow-hidden border border-[var(--color-line)] rounded-sm">
+                  <div className="relative w-full shrink-0 aspect-video overflow-hidden border border-[var(--color-line)] rounded-sm">
                     <ProjectCover project={p} />
                   </div>
                   <div className="flex flex-col gap-2 mt-5">
@@ -227,7 +227,7 @@ export default function ProjectsShowcase({ projects = [] }) {
                   </span>
                 </div>
                 <Link href={`/portfolio/${p.slug}`} className="block focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)] rounded-sm">
-                  <div className="relative aspect-[4/3] overflow-hidden border border-[var(--color-line)] rounded-sm">
+                  <div className="relative w-full aspect-video overflow-hidden border border-[var(--color-line)] rounded-sm">
                     <ProjectCover project={p} />
                   </div>
                   <h3 className="font-display text-xl leading-[1.05] tracking-[-0.02em] text-[var(--color-fg)] mt-4 group-hover:text-[var(--color-accent)] transition-colors">
