@@ -18,18 +18,25 @@ function isLikelyImageUrl(s) {
   return false;
 }
 
-function ImagePreview({ url, label }) {
+function ImagePreview({ url, label, aspect }) {
   const [broken, setBroken] = useState(false);
   useEffect(() => {
     setBroken(false);
   }, [url]);
   if (!url || broken || !isLikelyImageUrl(url)) return null;
+  const previewStyle =
+    typeof aspect === "number" && aspect > 0
+      ? { aspectRatio: aspect }
+      : { aspectRatio: "16 / 10" };
   return (
     <div className="mt-3 overflow-hidden rounded-xl border border-[var(--color-line)] bg-[var(--color-bg)]">
       <p className="px-3 py-1.5 text-[10px] font-medium uppercase tracking-wider text-[var(--color-fg-muted)]">
         {label || "Preview"}
       </p>
-      <div className="relative aspect-[16/10] w-full max-h-56 bg-[var(--color-bg-soft)]">
+      <div
+        className="relative w-full max-h-56 bg-[var(--color-bg-soft)]"
+        style={previewStyle}
+      >
         {/* eslint-disable-next-line @next/next/no-img-element -- CMS preview of arbitrary URL */}
         <img
           src={url}
@@ -251,7 +258,11 @@ export default function FieldInput({ field, value, onChange, onPasteLastUrl, onF
         className={urlWithMedia ? `${base} flex-1 min-w-0` : base}
       />
       {showCoverPreview && (
-        <ImagePreview url={String(value).trim()} label="Preview" />
+        <ImagePreview
+          url={String(value).trim()}
+          label="Preview"
+          aspect={cropAspect ?? undefined}
+        />
       )}
       {uploadErr && <p className="text-[11px] text-red-400">{uploadErr}</p>}
     </div>

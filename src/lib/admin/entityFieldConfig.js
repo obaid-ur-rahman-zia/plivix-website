@@ -78,7 +78,9 @@ export const ENTITY_FIELDS = {
       media: true,
       accept: "image/*",
       preview: "image",
-      hint: "Hero image on the case study page. Upload stores file in Supabase (site-media → projects/…).",
+      /** Matches case study hero + portfolio hover preview (16:9). */
+      cropAspect: 16 / 9,
+      hint: "Hero image on the case study page (16:9). Upload stores file in Supabase (site-media → projects/…).",
     },
     {
       key: "thumbnail_url",
@@ -87,7 +89,8 @@ export const ENTITY_FIELDS = {
       media: true,
       accept: "image/*",
       preview: "image",
-      hint: "Smaller image for homepage cards; falls back to cover if empty.",
+      cropAspect: 16 / 9,
+      hint: "Smaller image for homepage cards; falls back to cover if empty. Cropped to 16:9 like the hero.",
     },
     {
       key: "gallery_urls",

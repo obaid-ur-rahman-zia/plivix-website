@@ -173,10 +173,10 @@ export default function AboutPage({ team = [], stats = [] }) {
                 const img = m.image_url || m.thumbnail_url;
                 return (
                   <div
-                    key={m.name}
+                    key={m.id ?? m.name}
                     data-reveal
-                    className="grid grid-cols-12 gap-6 border-t border-[var(--color-line)] py-8"
-                    {...(img ? bindHoverImage(img) : {})}
+                    className="group/row grid grid-cols-12 gap-6 border-t border-[var(--color-line)] py-8 transition-colors duration-300 hover:bg-[color-mix(in_oklab,var(--color-fg)_4%,transparent)]"
+                    {...(img ? bindHoverImage(img, m.id ?? m.name) : {})}
                   >
                     <h3 className="col-span-12 md:col-span-6 font-display text-2xl md:text-3xl tracking-[-0.025em] text-[var(--color-fg)]">
                       {m.name}

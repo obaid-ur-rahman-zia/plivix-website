@@ -70,6 +70,35 @@ function dedupeStatsRows(rows) {
   return sortBy([...byOrder.values()], "order_index");
 }
 
+/** Seed UUIDs in src/lib/content/team.js — prefer live CMS rows when order_index clashes. */
+const TEAM_SEED_ID_PREFIX = "10000001-0001-4000-8000-";
+
+function isTeamSeedPlaceholder(id) {
+  return typeof id === "string" && id.startsWith(TEAM_SEED_ID_PREFIX);
+}
+
+function pickPreferredTeamRow(a, b) {
+  const aPh = isTeamSeedPlaceholder(a.id);
+  const bPh = isTeamSeedPlaceholder(b.id);
+  if (aPh && !bPh) return b;
+  if (!aPh && bPh) return a;
+  return String(a.id ?? "").localeCompare(String(b.id ?? "")) <= 0 ? a : b;
+}
+
+function dedupeTeamRows(rows) {
+  if (!rows?.length) return [];
+  const byOrder = new Map();
+  for (const r of sortBy(rows, "order_index")) {
+    const oi = r.order_index ?? 0;
+    if (!byOrder.has(oi)) {
+      byOrder.set(oi, r);
+      continue;
+    }
+    byOrder.set(oi, pickPreferredTeamRow(byOrder.get(oi), r));
+  }
+  return sortBy([...byOrder.values()], "order_index");
+}
+
 async function query(table, localFallback, filter = {}) {
   const client = getServerClient();
   if (!client) return sortBy(localFallback);
@@ -111,7 +140,8 @@ export async function getServiceBySlug(slug) {
 }
 
 export async function getTeam() {
-  return query("team", localTeam, { active: true });
+  const rows = await query("team", localTeam, { active: true });
+  return dedupeTeamRows(rows);
 }
 
 export async function getTestimonials() {

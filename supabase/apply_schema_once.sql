@@ -206,3 +206,31 @@ create policy "public read site settings"
   on public.site_settings for select
   to anon, authenticated
   using (true);
+
+-- === 20260420000001_ensure_all_cms_columns.sql ===
+-- Backfill columns on old DBs (PostgREST schema cache / CMS PATCH).
+
+alter table public.services
+  add column if not exists icon_name text,
+  add column if not exists image_url text,
+  add column if not exists thumbnail_url text,
+  add column if not exists video_url text;
+
+alter table public.projects
+  add column if not exists client text,
+  add column if not exists cover_url text,
+  add column if not exists thumbnail_url text,
+  add column if not exists gallery_urls text[] not null default '{}',
+  add column if not exists video_urls text[] not null default '{}',
+  add column if not exists description text,
+  add column if not exists tech_stack text[] not null default '{}',
+  add column if not exists year int,
+  add column if not exists live_url text;
+
+alter table public.team
+  add column if not exists image_url text,
+  add column if not exists thumbnail_url text,
+  add column if not exists video_url text;
+
+alter table public.testimonials
+  add column if not exists avatar_url text;

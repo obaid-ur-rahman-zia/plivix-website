@@ -10,8 +10,11 @@ import { prefersReducedMotion } from "@/lib/scroll/useScrollTriggerSync";
  * ProjectsShowcase — horizontal scroll gallery.
  *
  * Desktop (md+):
- *   - Section pins; cards scroll sideways as the page scrolls vertically.
- *   - Classic GSAP xPercent pattern synced with Lenis.
+ *   - Section pins; cards move sideways as you scroll vertically (Lenis + ScrollTrigger).
+ *   - Distance uses the **track's overflow parent width**, not `window.innerWidth`
+ *     (wrong distance was shifting cards off-screen / empty strip).
+ *   - `x` / `end` are function-based so `ScrollTrigger.refresh()` after images/fonts
+ *     recalculates correctly.
  * Mobile:
  *   - Native horizontal snap scroll (touch-friendly).
  */
@@ -19,56 +22,82 @@ export default function ProjectsShowcase({ projects = [] }) {
   const sectionRef = useRef(null);
   const pinRef = useRef(null);
   const trackRef = useRef(null);
+  const trackWrapRef = useRef(null);
 
   useEffect(() => {
     if (!sectionRef.current || !trackRef.current || projects.length === 0) return;
     if (prefersReducedMotion()) return;
 
-    const mq = window.matchMedia("(min-width: 768px)");
-    if (!mq.matches) return;
+    gsap.registerPlugin(ScrollTrigger);
+    const mm = gsap.matchMedia();
 
-    let trigger;
-
-    const setup = () => {
-      if (trigger) {
-        trigger.kill();
-        trigger = null;
-      }
-      if (!trackRef.current || !pinRef.current) return;
-
+    mm.add("(min-width: 768px)", () => {
+      const section = sectionRef.current;
       const track = trackRef.current;
-      // Distance to travel so the last card's right edge aligns with the
-      // viewport's right edge.
-      const distance = track.scrollWidth - window.innerWidth;
-      if (distance <= 0) return;
+      const pin = pinRef.current;
+      const wrap = trackWrapRef.current ?? track.parentElement;
+      if (!section || !track || !pin || !wrap) return () => {};
+
+      const getDistance = () => {
+        const w = wrap.clientWidth;
+        if (!w) return 0;
+        return Math.max(0, track.scrollWidth - w);
+      };
 
       gsap.set(track, { x: 0 });
-      trigger = ScrollTrigger.create({
-        trigger: sectionRef.current,
-        start: "top top",
-        end: () => `+=${distance + window.innerHeight * 0.5}`,
-        pin: pinRef.current,
-        pinSpacing: true,
-        scrub: 0.6,
-        invalidateOnRefresh: true,
-        animation: gsap.to(track, {
-          x: -distance,
-          ease: "none",
-        }),
+
+      const tween = gsap.to(track, {
+        x: () => -getDistance(),
+        ease: "none",
+        scrollTrigger: {
+          trigger: section,
+          start: "top top",
+          end: () => {
+            const d = getDistance();
+            return `+=${d + Math.max(240, window.innerHeight * 0.35)}`;
+          },
+          pin,
+          pinSpacing: true,
+          scrub: 0.65,
+          anticipatePin: 1,
+          invalidateOnRefresh: true,
+        },
       });
-    };
 
-    const ctx = gsap.context(() => {
-      // Give layout a tick so scrollWidth is final
-      requestAnimationFrame(setup);
-      window.addEventListener("resize", setup);
-    }, sectionRef);
+      const refresh = () => {
+        requestAnimationFrame(() => ScrollTrigger.refresh());
+      };
 
-    return () => {
-      window.removeEventListener("resize", setup);
-      if (trigger) trigger.kill();
-      ctx.revert();
-    };
+      const ro = new ResizeObserver(refresh);
+      ro.observe(section);
+      ro.observe(wrap);
+      ro.observe(track);
+
+      window.addEventListener("resize", refresh);
+      window.addEventListener("load", refresh, { once: true });
+
+      const imgs = track.querySelectorAll("img");
+      imgs.forEach((img) => {
+        if (!img.complete) img.addEventListener("load", refresh, { once: true });
+      });
+
+      const t1 = requestAnimationFrame(refresh);
+      const t2 = setTimeout(refresh, 120);
+      const t3 = setTimeout(refresh, 600);
+
+      return () => {
+        cancelAnimationFrame(t1);
+        clearTimeout(t2);
+        clearTimeout(t3);
+        ro.disconnect();
+        window.removeEventListener("resize", refresh);
+        imgs.forEach((img) => img.removeEventListener("load", refresh));
+        tween.scrollTrigger?.kill();
+        tween.kill();
+      };
+    });
+
+    return () => mm.revert();
   }, [projects.length]);
 
   if (projects.length === 0) return null;
@@ -82,7 +111,7 @@ export default function ProjectsShowcase({ projects = [] }) {
       {/* Desktop pinned horizontal scroll */}
       <div
         ref={pinRef}
-        className="hidden md:flex flex-col h-[100svh] overflow-hidden"
+        className="hidden md:flex flex-col h-[100svh] min-h-0 overflow-hidden"
       >
         <div className="container-edge pt-24 lg:pt-28 pb-10 flex items-end justify-between gap-6">
           <div>
@@ -109,7 +138,10 @@ export default function ProjectsShowcase({ projects = [] }) {
           </div>
         </div>
 
-        <div className="flex-1 relative overflow-hidden">
+        <div
+          ref={trackWrapRef}
+          className="flex-1 relative min-h-0 overflow-hidden"
+        >
           <div
             ref={trackRef}
             className="absolute inset-y-0 left-0 flex items-center gap-6 lg:gap-8 pl-[clamp(1.25rem,4vw,3rem)] pr-[25vw] will-change-transform"
