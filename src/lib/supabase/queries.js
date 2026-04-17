@@ -40,6 +40,36 @@ function sortBy(arr, field = "order_index") {
   return [...arr].sort((a, b) => (a[field] ?? 0) - (b[field] ?? 0));
 }
 
+/** Matches `id` values in `src/lib/content/stats.js` (seed upsert). */
+const STAT_SEED_ID_PREFIX = "10000003-0001-4000-8000-";
+
+function isStatSeedPlaceholder(id) {
+  return typeof id === "string" && id.startsWith(STAT_SEED_ID_PREFIX);
+}
+
+/** When the DB has duplicate `order_index` rows (old seed + CMS edits), prefer the live row. */
+function pickPreferredStatRow(a, b) {
+  const aPh = isStatSeedPlaceholder(a.id);
+  const bPh = isStatSeedPlaceholder(b.id);
+  if (aPh && !bPh) return b;
+  if (!aPh && bPh) return a;
+  return String(a.id ?? "").localeCompare(String(b.id ?? "")) <= 0 ? a : b;
+}
+
+function dedupeStatsRows(rows) {
+  if (!rows?.length) return [];
+  const byOrder = new Map();
+  for (const r of rows) {
+    const oi = r.order_index ?? 0;
+    if (!byOrder.has(oi)) {
+      byOrder.set(oi, r);
+      continue;
+    }
+    byOrder.set(oi, pickPreferredStatRow(byOrder.get(oi), r));
+  }
+  return sortBy([...byOrder.values()], "order_index");
+}
+
 async function query(table, localFallback, filter = {}) {
   const client = getServerClient();
   if (!client) return sortBy(localFallback);
@@ -89,7 +119,8 @@ export async function getTestimonials() {
 }
 
 export async function getStats() {
-  return query("stats", localStats);
+  const rows = await query("stats", localStats);
+  return dedupeStatsRows(rows);
 }
 
 export async function getActiveInternships() {

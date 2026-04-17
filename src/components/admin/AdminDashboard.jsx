@@ -52,30 +52,6 @@ export default function AdminDashboard() {
         uploader below and &quot;Use last upload URL&quot; on any URL field.
       </p>
 
-      <div className="mb-10 rounded-2xl border border-[var(--color-line)] p-5 md:p-6 bg-[var(--color-bg-elev)] space-y-3">
-        <p className="text-sm font-medium text-[var(--color-fg)]">Media upload</p>
-        <p className="text-xs text-[var(--color-fg-muted)]">
-          Files go to the <code className="font-mono text-[var(--color-accent)]">site-media</code> bucket. After
-          upload, use the URL in cover, avatar, or gallery fields.
-        </p>
-        <input type="file" onChange={onUpload} className="text-sm max-w-full file:mr-3 file:rounded-lg file:border file:border-[var(--color-line)] file:bg-[var(--color-bg)] file:px-3 file:py-1.5" />
-        {uploadErr && <p className="text-sm text-red-400">{uploadErr}</p>}
-        {uploadMsg && (
-          <div className="flex flex-wrap items-start gap-2 rounded-xl border border-[var(--color-line)] bg-[var(--color-bg)] p-3">
-            <p className="text-xs font-mono break-all text-[var(--color-accent)] flex-1 min-w-0">{uploadMsg}</p>
-            {lastUploadUrl && (
-              <button
-                type="button"
-                onClick={copyUrl}
-                className="shrink-0 rounded-lg border border-[var(--color-line)] px-2 py-1 text-xs text-[var(--color-fg)]"
-              >
-                Copy URL
-              </button>
-            )}
-          </div>
-        )}
-      </div>
-
       <div className="flex flex-wrap gap-2 mb-6">
         <button
           type="button"
@@ -125,6 +101,33 @@ export default function AdminDashboard() {
           <EntityPanel entity={entity} lastUploadUrl={lastUploadUrl} />
         </>
       )}
+
+
+
+<div className="mt-10 rounded-2xl border border-[var(--color-line)] p-5 md:p-6 bg-[var(--color-bg-elev)] space-y-3">
+        <p className="text-sm font-medium text-[var(--color-fg)]">Media upload</p>
+        <p className="text-xs text-[var(--color-fg-muted)]">
+          Files go to the <code className="font-mono text-[var(--color-accent)]">site-media</code> bucket. After
+          upload, use the URL in cover, avatar, or gallery fields.
+        </p>
+        <input type="file" onChange={onUpload} className="text-sm max-w-full file:mr-3 file:rounded-lg file:border file:border-[var(--color-line)] file:bg-[var(--color-bg)] file:px-3 file:py-1.5" />
+        {uploadErr && <p className="text-sm text-red-400">{uploadErr}</p>}
+        {uploadMsg && (
+          <div className="flex flex-wrap items-start gap-2 rounded-xl border border-[var(--color-line)] bg-[var(--color-bg)] p-3">
+            <p className="text-xs font-mono break-all text-[var(--color-accent)] flex-1 min-w-0">{uploadMsg}</p>
+            {lastUploadUrl && (
+              <button
+                type="button"
+                onClick={copyUrl}
+                className="shrink-0 rounded-lg border border-[var(--color-line)] px-2 py-1 text-xs text-[var(--color-fg)]"
+              >
+                Copy URL
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+
     </div>
   );
 }

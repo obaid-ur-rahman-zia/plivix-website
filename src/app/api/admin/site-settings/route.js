@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { verifyAdminRequest } from "@/lib/admin-auth";
 import { getSupabaseAdmin, getSupabaseAdminConfigError } from "@/lib/supabase/adminServer";
 import { defaultSiteSettings } from "@/lib/content/siteSettings";
@@ -57,5 +58,6 @@ export async function PATCH(request) {
     .single();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  revalidatePath("/", "layout");
   return NextResponse.json({ data });
 }

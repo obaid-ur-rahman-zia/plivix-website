@@ -50,13 +50,13 @@ export default function StatsStrip({ stats = [] }) {
       <div className="grid grid-cols-2 md:grid-cols-4 relative z-10">
         {stats.map((s, i) => (
           <div
-            key={s.label}
+            key={s.id ?? `stat-${i}`}
             className={`flex flex-col gap-3 px-4 md:px-6 py-6 md:py-8 ${
               i < stats.length - 1 ? "md:border-r md:border-[var(--color-line)]" : ""
             } ${i < 2 ? "border-b border-[var(--color-line)] md:border-b-0" : ""}`}
           >
             <div className="font-display text-[clamp(2.5rem,6vw,5rem)] leading-none tracking-[-0.03em] text-[var(--color-fg)] flex items-baseline">
-              <span data-stat-value={s.value}>0</span>
+              <span data-stat-value={Number(s.value) || 0}>0</span>
               <span className="text-[var(--color-accent)] ml-1">
                 {s.suffix}
               </span>

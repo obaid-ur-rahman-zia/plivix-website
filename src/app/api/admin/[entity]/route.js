@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { verifyAdminRequest } from "@/lib/admin-auth";
 import { getSupabaseAdmin, getSupabaseAdminConfigError } from "@/lib/supabase/adminServer";
 
@@ -65,6 +66,8 @@ export async function PATCH(request, context) {
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
+  revalidatePath("/");
+  revalidatePath("/about");
   return NextResponse.json({ data });
 }
 
@@ -96,6 +99,8 @@ export async function POST(request, context) {
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
+  revalidatePath("/");
+  revalidatePath("/about");
   return NextResponse.json({ data });
 }
 
@@ -124,5 +129,7 @@ export async function DELETE(request, context) {
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
+  revalidatePath("/");
+  revalidatePath("/about");
   return NextResponse.json({ ok: true });
 }

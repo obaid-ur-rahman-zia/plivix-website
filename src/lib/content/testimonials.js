@@ -1,5 +1,6 @@
 export const testimonials = [
   {
+    id: "10000002-0001-4000-8000-000000000001",
     author: "Priya Shah",
     role: "VP Engineering",
     company: "Atlas Robotics",
@@ -8,6 +9,7 @@ export const testimonials = [
     order_index: 1,
   },
   {
+    id: "10000002-0001-4000-8000-000000000002",
     author: "Daniel Okoro",
     role: "Head of Data",
     company: "Meridian Retail",
@@ -16,6 +18,7 @@ export const testimonials = [
     order_index: 2,
   },
   {
+    id: "10000002-0001-4000-8000-000000000003",
     author: "Maya Al-Farsi",
     role: "Chief Product Officer",
     company: "Northwind Health",

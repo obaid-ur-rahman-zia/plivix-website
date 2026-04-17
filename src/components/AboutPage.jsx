@@ -85,7 +85,7 @@ export default function AboutPage({ team = [], stats = [] }) {
           <div className="container-edge grid grid-cols-2 md:grid-cols-4">
             {stats.map((s, i) => (
               <div
-                key={s.label}
+                key={s.id ?? `stat-${i}`}
                 data-reveal
                 className={`flex flex-col gap-3 py-8 px-2 md:px-6 ${
                   i < stats.length - 1 ? "md:border-r md:border-[var(--color-line)]" : ""

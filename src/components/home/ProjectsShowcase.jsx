@@ -104,7 +104,7 @@ export default function ProjectsShowcase({ projects = [] }) {
               className="eyebrow underline-grow text-[var(--color-fg)]"
               data-cursor="hover"
             >
-              View all →
+              View all projects →
             </Link>
           </div>
         </div>
@@ -180,7 +180,7 @@ export default function ProjectsShowcase({ projects = [] }) {
             className="eyebrow underline-grow text-[var(--color-fg)] self-end"
             data-cursor="hover"
           >
-            View all →
+            View all projects →
           </Link>
         </div>
 

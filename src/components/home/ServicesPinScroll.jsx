@@ -133,13 +133,24 @@ export default function ServicesPinScroll({ services = [] }) {
         {/* Left: index list */}
         <aside className="col-span-5 flex flex-col justify-between min-h-0 overflow-hidden">
           <div className="min-h-0 overflow-hidden flex flex-col">
-            <div className="eyebrow mb-4 flex items-center gap-3 shrink-0">
-              <span className="w-8 h-px bg-[var(--color-fg-muted)]" />
-              <span>What we do</span>
+            <div className="flex items-start justify-between gap-4 mb-6 shrink-0">
+              <div>
+                <div className="eyebrow mb-4 flex items-center gap-3">
+                  <span className="w-8 h-px bg-[var(--color-fg-muted)]" />
+                  <span>What we do</span>
+                </div>
+                <h2 className="font-display text-[clamp(2rem,4.4vw,3.75rem)] leading-[0.95] tracking-[-0.03em] text-[var(--color-fg)]">
+                  Services.
+                </h2>
+              </div>
+              <Link
+                href="/services"
+                className="eyebrow underline-grow text-[var(--color-fg)] shrink-0 mt-1"
+                data-cursor="hover"
+              >
+                View all services →
+              </Link>
             </div>
-            <h2 className="font-display text-[clamp(2rem,4.4vw,3.75rem)] leading-[0.95] tracking-[-0.03em] text-[var(--color-fg)] mb-6 shrink-0">
-              Services.
-            </h2>
             <ul className="flex flex-col min-h-0 overflow-hidden">
               {services.map((s, i) => {
                 const isActive = i === activeIdx;
@@ -295,12 +306,21 @@ export default function ServicesPinScroll({ services = [] }) {
 
       {/* Mobile stacked fallback */}
       <div className="md:hidden container-edge py-16 flex flex-col gap-12">
-        <div>
-          <div className="eyebrow mb-4 flex items-center gap-3">
-            <span className="w-6 h-px bg-[var(--color-fg-muted)]" />
-            <span>What we do</span>
+        <div className="flex items-end justify-between gap-4">
+          <div>
+            <div className="eyebrow mb-4 flex items-center gap-3">
+              <span className="w-6 h-px bg-[var(--color-fg-muted)]" />
+              <span>What we do</span>
+            </div>
+            <h2 className="heading-lg text-[var(--color-fg)]">Services.</h2>
           </div>
-          <h2 className="heading-lg text-[var(--color-fg)]">Services.</h2>
+          <Link
+            href="/services"
+            className="eyebrow underline-grow text-[var(--color-fg)] self-end shrink-0"
+            data-cursor="hover"
+          >
+            View all services →
+          </Link>
         </div>
         {services.map((s, i) => {
           const rowImg = s.image_url || s.thumbnail_url;
