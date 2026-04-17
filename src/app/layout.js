@@ -57,12 +57,19 @@ export const metadata = {
     siteName: "Plivix Technologies",
     images: [
       {
-        url: "/images/logo/social-logo.png",
+        url: "/images/og-image/og.png",
         width: 1200,
         height: 630,
         alt: "Plivix Technologies",
       },
     ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Plivix Technologies — Engineering intelligent systems",
+    description:
+      "Full-stack engineering, AI automation, machine learning and data science for modern teams.",
+    images: ["/images/og-image/og.png"],
   },
   robots: "index, follow",
   icons: { icon: "/favicon.ico" },

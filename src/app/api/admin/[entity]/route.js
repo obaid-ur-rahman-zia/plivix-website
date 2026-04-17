@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { verifyAdminRequest } from "@/lib/admin-auth";
-import { getSupabaseAdmin } from "@/lib/supabase/adminServer";
+import { getSupabaseAdmin, getSupabaseAdminConfigError } from "@/lib/supabase/adminServer";
 
 const TABLES = new Set([
   "services",
@@ -19,12 +19,13 @@ export async function GET(request, context) {
   if (!TABLES.has(entity)) {
     return NextResponse.json({ error: "Unknown entity" }, { status: 404 });
   }
+  const cfgErr = getSupabaseAdminConfigError();
+  if (cfgErr) {
+    return NextResponse.json({ error: cfgErr }, { status: 503 });
+  }
   const admin = getSupabaseAdmin();
   if (!admin) {
-    return NextResponse.json(
-      { error: "Supabase service role not configured" },
-      { status: 503 }
-    );
+    return NextResponse.json({ error: "Supabase admin client unavailable" }, { status: 503 });
   }
   const { data, error } = await admin.from(entity).select("*").order("order_index", { ascending: true });
   if (error) {
@@ -52,12 +53,13 @@ export async function PATCH(request, context) {
     return NextResponse.json({ error: "id required" }, { status: 400 });
   }
   const { id: _drop, ...patch } = body;
+  const cfgErrPatch = getSupabaseAdminConfigError();
+  if (cfgErrPatch) {
+    return NextResponse.json({ error: cfgErrPatch }, { status: 503 });
+  }
   const admin = getSupabaseAdmin();
   if (!admin) {
-    return NextResponse.json(
-      { error: "Supabase service role not configured" },
-      { status: 503 }
-    );
+    return NextResponse.json({ error: "Supabase admin client unavailable" }, { status: 503 });
   }
   const { data, error } = await admin.from(entity).update(patch).eq("id", id).select().single();
   if (error) {

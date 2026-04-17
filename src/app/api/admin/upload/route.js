@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { verifyAdminRequest } from "@/lib/admin-auth";
-import { getSupabaseAdmin } from "@/lib/supabase/adminServer";
+import { getSupabaseAdmin, getSupabaseAdminConfigError } from "@/lib/supabase/adminServer";
 
 const BUCKET = "site-media";
 
@@ -8,12 +8,13 @@ export async function POST(request) {
   if (!(await verifyAdminRequest(request))) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+  const cfgErr = getSupabaseAdminConfigError();
+  if (cfgErr) {
+    return NextResponse.json({ error: cfgErr }, { status: 503 });
+  }
   const admin = getSupabaseAdmin();
   if (!admin) {
-    return NextResponse.json(
-      { error: "Supabase service role not configured" },
-      { status: 503 }
-    );
+    return NextResponse.json({ error: "Supabase admin client unavailable" }, { status: 503 });
   }
   let form;
   try {
