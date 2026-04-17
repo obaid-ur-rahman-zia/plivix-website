@@ -149,7 +149,7 @@ export default function ProjectsShowcase({ projects = [] }) {
         </div>
       </div>
 
-      {/* Mobile: native horizontal scroll with snap */}
+      {/* Mobile: native horizontal scroll with snap   __*/}
       <div className="md:hidden">
         <div className="container-edge pt-16 pb-8 flex items-end justify-between gap-6">
           <div>
