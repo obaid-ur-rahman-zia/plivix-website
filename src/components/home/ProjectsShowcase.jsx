@@ -113,7 +113,7 @@ export default function ProjectsShowcase({ projects = [] }) {
         ref={pinRef}
         className="hidden md:flex flex-col h-[100svh] min-h-0 overflow-hidden"
       >
-        <div className="container-edge pt-24 lg:pt-28 pb-10 flex items-end justify-between gap-6">
+        <div className="container-edge pt-24 lg:pt-28 pb-6 md:pb-8 flex items-end justify-between gap-6 shrink-0">
           <div>
             <div className="eyebrow mb-4 flex items-center gap-3">
               <span className="w-8 h-px bg-[var(--color-fg-muted)]" />
@@ -144,12 +144,12 @@ export default function ProjectsShowcase({ projects = [] }) {
         >
           <div
             ref={trackRef}
-            className="absolute inset-y-0 left-0 flex items-center gap-6 lg:gap-8 pl-[clamp(1.25rem,4vw,3rem)] pr-[25vw] will-change-transform"
+            className="absolute inset-y-0 left-0 flex items-start pt-2 gap-6 lg:gap-8 pl-[clamp(1.25rem,4vw,3rem)] pr-[25vw] will-change-transform"
           >
             {projects.map((p, i) => (
               <div
                 key={p.slug}
-                className="group relative flex-none w-[80vw] sm:w-[60vw] md:w-[48vw] lg:w-[38vw] xl:w-[32vw] max-w-[640px] h-[70%] flex flex-col"
+                className="group relative flex-none w-[80vw] sm:w-[60vw] md:w-[48vw] lg:w-[38vw] xl:w-[32vw] max-w-[640px] h-[86%] max-h-full min-h-0 flex flex-col"
               >
                 <div className="flex items-baseline justify-between eyebrow text-[var(--color-fg-muted)] mb-4">
                   <span>{String(i + 1).padStart(2, "0")}</span>
@@ -160,12 +160,12 @@ export default function ProjectsShowcase({ projects = [] }) {
                 <Link
                   href={`/portfolio/${p.slug}`}
                   data-cursor="hover"
-                  className="flex min-h-0 flex-1 flex-col focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)] rounded-sm"
+                  className="flex min-h-0 flex-1 flex-col justify-between gap-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)] rounded-sm"
                 >
-                  <div className="relative w-full shrink-0 aspect-video overflow-hidden border border-[var(--color-line)] rounded-sm">
+                  <div className="relative mx-auto w-full max-w-[min(100%,calc(30svh*16/9))] shrink-0 aspect-video overflow-hidden border border-[var(--color-line)] rounded-sm">
                     <ProjectCover project={p} />
                   </div>
-                  <div className="flex flex-col gap-2 mt-5">
+                  <div className="flex min-h-0 flex-col gap-2 mt-1">
                     <h3 className="font-display text-xl lg:text-2xl xl:text-3xl leading-[1.05] tracking-[-0.02em] text-[var(--color-fg)] group-hover:text-[var(--color-accent)] transition-colors">
                       {p.title}
                     </h3>

@@ -155,7 +155,9 @@ export default function Hero() {
               </span>
               <span className="block overflow-hidden py-[0.04em] [line-height:inherit]">
                 <span className="hero-line block [line-height:inherit]">
-                  <span className="text-chroma text-chroma-anim font-bold">intelligent</span>{" "}
+                  <span className="inline font-bold rounded-none bg-[var(--color-accent)] px-[0.12em] py-[0.04em] text-[var(--color-on-accent)]">
+                    intelligent
+                  </span>{" "}
                   <span className="text-[var(--color-fg)]">systems.</span>
                 </span>
               </span>
