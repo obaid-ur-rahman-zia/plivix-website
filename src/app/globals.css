@@ -1,0 +1,681 @@
+@import "tailwindcss";
+
+/* --------------------------------------------------------------------
+ * Plivix — Lenis-style design tokens
+ * Dual-theme: dark (default) + light. Monochrome base with Plivix blue
+ * as the functional accent, plus a decorative chroma set (pink/violet/
+ * cyan) used only for gradient blobs, shadows, and aurora backdrops.
+ * ------------------------------------------------------------------ */
+
+@theme {
+  /* Surfaces (dark defaults — overridden below via data-theme) */
+  --color-bg: #0a0a0a;
+  --color-bg-elev: #111111;
+  --color-bg-soft: #151515;
+  --color-line: #1f1f1f;
+  --color-line-strong: #2a2a2a;
+
+  /* Foreground */
+  --color-fg: #ededeb;
+  --color-fg-muted: #8a8a86;
+  --color-fg-subtle: #5a5a56;
+
+  /* Brand accent — dark theme default: soft lavender */
+  --color-accent: #d4cbff;
+  --color-accent-hover: #ebe4ff;
+  --color-accent-soft: rgba(212, 203, 255, 0.16);
+  --color-on-accent: #0f0a1a;
+
+  /* Decorative chroma — gradients only, never semantic */
+  --chroma-pink: #ff6fb0;
+  --chroma-violet: #8b5cff;
+  --chroma-cyan: #22d3ff;
+  --chroma-amber: #ffb86b;
+
+  /* Nav / overlay translucent bg — rebuilt per theme */
+  --color-nav-bg: rgba(10, 10, 10, 0.72);
+  --color-overlay-bg: rgba(10, 10, 10, 0.6);
+
+  /* Semantic (shadcn-compatible mappings for any leftover utilities) */
+  --color-background: var(--color-bg);
+  --color-foreground: var(--color-fg);
+  --color-border: var(--color-line);
+  --color-muted: var(--color-bg-elev);
+  --color-muted-foreground: var(--color-fg-muted);
+  --color-primary: var(--color-accent);
+  --color-primary-foreground: var(--color-on-accent);
+  --color-ring: var(--color-accent);
+
+  /* Typography — next/font injects CSS vars via layout.js */
+  --font-display: var(--font-space-grotesk), "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-body: var(--font-inter), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Legacy aliases */
+  --color-primary-white: var(--color-fg);
+  --color-dark-blue: var(--color-accent);
+  --color-darkest-gray: var(--color-fg-muted);
+  --font-primary: var(--font-display);
+  --font-secondary: var(--font-body);
+
+  /* Easings */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-quart: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* --------------------------------------------------------------------
+ * Dark theme (default) — explicit so we can cleanly toggle.
+ * ------------------------------------------------------------------ */
+
+:root,
+:root[data-theme="dark"] {
+  --color-bg: #0a0a0a;
+  --color-bg-elev: #111111;
+  --color-bg-soft: #151515;
+  --color-line: #1f1f1f;
+  --color-line-strong: #2a2a2a;
+  --color-fg: #ededeb;
+  --color-fg-muted: #8a8a86;
+  --color-fg-subtle: #5a5a56;
+  --color-accent: #d4cbff;
+  --color-accent-hover: #ebe4ff;
+  --color-accent-soft: rgba(212, 203, 255, 0.16);
+  --color-on-accent: #0f0a1a;
+  --color-nav-bg: rgba(10, 10, 10, 0.72);
+  --color-overlay-bg: rgba(10, 10, 10, 0.85);
+  color-scheme: dark;
+}
+
+/* --------------------------------------------------------------------
+ * Light theme — warm paper base, high-contrast ink foreground.
+ * ------------------------------------------------------------------ */
+
+:root[data-theme="light"] {
+  --color-bg: #f5f4ef;
+  --color-bg-elev: #ffffff;
+  --color-bg-soft: #ecebe4;
+  --color-line: #dcdbd4;
+  --color-line-strong: #bfbeb6;
+  --color-fg: #0c0c0c;
+  --color-fg-muted: #5a5a56;
+  --color-fg-subtle: #9e9d96;
+  --color-accent: #2c2167;
+  --color-accent-hover: #1f1749;
+  --color-accent-soft: rgba(44, 34, 103, 0.12);
+  --color-on-accent: #ffffff;
+  --color-nav-bg: rgba(245, 244, 239, 0.72);
+  --color-overlay-bg: rgba(245, 244, 239, 0.9);
+  color-scheme: light;
+}
+
+/* --------------------------------------------------------------------
+ * Base
+ * ------------------------------------------------------------------ */
+
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  background: var(--color-bg);
+  color: var(--color-fg);
+  font-family: var(--font-body);
+  text-rendering: optimizeLegibility;
+  transition: background-color 0.4s var(--ease-out-quart), color 0.4s var(--ease-out-quart);
+}
+
+/* Hide the native cursor on fine-pointer devices (desktop with mouse).
+   The custom dot+ring Cursor component takes over. Touch devices keep
+   their default cursor (no pointer:fine match). */
+@media (hover: hover) and (pointer: fine) {
+  html,
+  body,
+  *,
+  a,
+  button,
+  input,
+  textarea,
+  select,
+  [role="button"] {
+    cursor: none !important;
+  }
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-fg);
+  font-family: var(--font-body);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  overscroll-behavior-y: none;
+}
+
+::selection {
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+}
+
+html,
+body {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-line-strong) transparent;
+}
+
+body::-webkit-scrollbar {
+  width: 6px;
+}
+body::-webkit-scrollbar-track {
+  background: transparent;
+}
+body::-webkit-scrollbar-thumb {
+  background: var(--color-line-strong);
+  border-radius: 3px;
+}
+
+/* --------------------------------------------------------------------
+ * Typography
+ * ------------------------------------------------------------------ */
+
+.font-display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  font-feature-settings: "ss01", "ss02";
+}
+
+.font-body {
+  font-family: var(--font-body);
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+  letter-spacing: 0;
+}
+
+.heading-xl {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(3.25rem, 10vw, 11rem);
+  line-height: 0.92;
+  letter-spacing: -0.04em;
+}
+
+.heading-lg {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(2.5rem, 6.5vw, 7rem);
+  line-height: 0.95;
+  letter-spacing: -0.035em;
+}
+
+.heading-md {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(1.75rem, 3.5vw, 3.25rem);
+  line-height: 1.02;
+  letter-spacing: -0.025em;
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-fg-muted);
+}
+
+/* --------------------------------------------------------------------
+ * Layout
+ * ------------------------------------------------------------------ */
+
+.container-edge {
+  width: 100%;
+  padding-inline: clamp(1.25rem, 4vw, 3rem);
+}
+
+.hairline {
+  height: 1px;
+  width: 100%;
+  background: var(--color-line);
+}
+
+.v-hairline {
+  width: 1px;
+  height: 100%;
+  background: var(--color-line);
+}
+
+/* --------------------------------------------------------------------
+ * Reveal primitives
+ * ------------------------------------------------------------------ */
+
+.mask-reveal {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+}
+
+.mask-reveal > span {
+  display: inline-block;
+  transform: translateY(110%);
+  will-change: transform;
+}
+
+.split-line-wrapper {
+  overflow: hidden;
+}
+
+/* --------------------------------------------------------------------
+ * Marquee
+ * ------------------------------------------------------------------ */
+
+.marquee-track {
+  display: inline-flex;
+  gap: 3rem;
+  white-space: nowrap;
+  will-change: transform;
+}
+
+/* --------------------------------------------------------------------
+ * Links + focus
+ * ------------------------------------------------------------------ */
+
+.underline-grow {
+  position: relative;
+  display: inline-block;
+}
+
+.underline-grow::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 1px;
+  background: currentColor;
+  transform-origin: right center;
+  transform: scaleX(0);
+  transition: transform 0.6s var(--ease-out-expo);
+}
+
+.underline-grow:hover::after,
+.underline-grow:focus-visible::after {
+  transform-origin: left center;
+  transform: scaleX(1);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* --------------------------------------------------------------------
+ * GRADIENT + DECORATION UTILITIES
+ * ------------------------------------------------------------------ */
+
+/* Subtle dotted grid overlay — scales with currentColor opacity */
+.bg-dot-grid {
+  background-image: radial-gradient(
+    var(--color-line-strong) 1px,
+    transparent 1px
+  );
+  background-size: 28px 28px;
+  background-position: 0 0;
+}
+
+.bg-dot-grid-fade {
+  position: relative;
+}
+.bg-dot-grid-fade::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(
+    var(--color-line-strong) 1px,
+    transparent 1px
+  );
+  background-size: 28px 28px;
+  mask-image: radial-gradient(ellipse at center, #000 0%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse at center, #000 0%, transparent 75%);
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+/* Hero stage — theme-aware translucent backdrops. The global 3D scene
+   and PageBackground blobs sit behind; these layers tint + soften them so
+   the headline stays readable. */
+.hero-bg-dark,
+.hero-bg-light {
+  transition: opacity 0.5s var(--ease-out-quart);
+}
+/* Dark-theme stage: deep navy wash */
+.hero-bg-dark {
+  opacity: 1;
+  background:
+    radial-gradient(130% 100% at 50% 20%, rgba(10, 16, 36, 0.72) 0%, rgba(5, 7, 15, 0.82) 55%, rgba(2, 3, 8, 0.88) 100%);
+}
+/* Light-theme stage: soft white wash with subtle blue tint */
+.hero-bg-light {
+  opacity: 0;
+  background:
+    radial-gradient(130% 100% at 50% 10%, rgba(255, 255, 255, 0.62) 0%, rgba(236, 240, 250, 0.72) 55%, rgba(222, 230, 246, 0.82) 100%);
+}
+:root[data-theme="light"] .hero-bg-dark { opacity: 0; }
+:root[data-theme="light"] .hero-bg-light { opacity: 1; }
+
+/* Softer chroma behind hero 3D — light theme needs lower saturation */
+.hero-chroma-bleed {
+  background:
+    radial-gradient(55% 55% at 85% 30%, color-mix(in oklab, var(--chroma-violet) 22%, transparent), transparent 70%),
+    radial-gradient(50% 50% at 15% 80%, color-mix(in oklab, var(--chroma-cyan) 16%, transparent), transparent 70%),
+    radial-gradient(40% 40% at 50% 0%, color-mix(in oklab, var(--color-accent) 14%, transparent), transparent 70%);
+  opacity: 1;
+}
+:root[data-theme="light"] .hero-chroma-bleed {
+  background:
+    radial-gradient(50% 50% at 82% 28%, color-mix(in oklab, var(--color-accent) 12%, transparent), transparent 72%),
+    radial-gradient(45% 45% at 18% 78%, color-mix(in oklab, var(--chroma-cyan) 8%, transparent), transparent 72%);
+  opacity: 0.85;
+}
+
+/* Keeps headline readable against the canvas (esp. light mode) */
+.hero-text-scrim {
+  position: relative;
+}
+.hero-text-scrim::before {
+  content: "";
+  position: absolute;
+  inset: -0.5rem -1rem -0.5rem -1rem;
+  z-index: -1;
+  border-radius: 1rem;
+  pointer-events: none;
+  background: linear-gradient(
+    105deg,
+    color-mix(in oklab, var(--color-bg) 78%, transparent) 0%,
+    color-mix(in oklab, var(--color-bg) 35%, transparent) 55%,
+    transparent 100%
+  );
+}
+:root[data-theme="light"] .hero-text-scrim::before {
+  background: linear-gradient(
+    105deg,
+    color-mix(in oklab, var(--color-bg) 92%, transparent) 0%,
+    color-mix(in oklab, var(--color-bg) 55%, transparent) 50%,
+    transparent 100%
+  );
+}
+
+/* Hero dash ticker (bottom scroll indicator) */
+@keyframes heroDash {
+  0%   { transform: translateX(-100%); }
+  50%  { transform: translateX(220%); }
+  100% { transform: translateX(-100%); }
+}
+
+/* Section gradients — atmospheric radial washes that blend SEAMLESSLY
+   into neighbouring sections.
+  
+   Key mechanics:
+   - No opaque `var(--color-bg)` base layer — that used to cover the fixed
+     PageBackground and create hard blocks at every section boundary.
+   - Gradients live on a ::before pseudo-element with z-index:-1, so they
+     sit behind section content but inside the section's stacking context
+     (thanks to `isolation: isolate`).
+   - The pseudo is masked with a vertical linear-gradient so each section's
+     wash fades to fully transparent at its top and bottom edges. Adjacent
+     sections therefore overlap cleanly at the join, letting the fixed
+     PageBackground + any neighbouring wash bleed through. No more visible
+     "blocks" of color separation. */
+.section-gradient,
+.section-gradient-alt,
+.section-gradient-warm {
+  position: relative;
+  isolation: isolate;
+}
+.section-gradient::before,
+.section-gradient-alt::before,
+.section-gradient-warm::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  /* Feather the wash into transparency at top & bottom so section joins are
+     invisible. Inner 82% is fully opaque, outer 9% on each side fades out. */
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    #000 9%,
+    #000 91%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    #000 9%,
+    #000 91%,
+    transparent 100%
+  );
+}
+
+.section-gradient::before {
+  background:
+    radial-gradient(60% 60% at 10% 0%, color-mix(in oklab, var(--color-accent) 18%, transparent), transparent 65%),
+    radial-gradient(55% 55% at 90% 100%, color-mix(in oklab, var(--chroma-violet) 18%, transparent), transparent 65%);
+}
+:root[data-theme="light"] .section-gradient::before {
+  background:
+    radial-gradient(60% 60% at 10% 0%, color-mix(in oklab, var(--color-accent) 10%, transparent), transparent 65%),
+    radial-gradient(55% 55% at 90% 100%, color-mix(in oklab, var(--chroma-violet) 8%, transparent), transparent 65%);
+}
+
+.section-gradient-alt::before {
+  background:
+    radial-gradient(55% 55% at 85% 15%, color-mix(in oklab, var(--chroma-cyan) 16%, transparent), transparent 65%),
+    radial-gradient(60% 60% at 15% 85%, color-mix(in oklab, var(--color-accent) 18%, transparent), transparent 65%);
+}
+:root[data-theme="light"] .section-gradient-alt::before {
+  background:
+    radial-gradient(55% 55% at 85% 15%, color-mix(in oklab, var(--chroma-cyan) 8%, transparent), transparent 65%),
+    radial-gradient(60% 60% at 15% 85%, color-mix(in oklab, var(--color-accent) 10%, transparent), transparent 65%);
+}
+
+.section-gradient-warm::before {
+  background:
+    radial-gradient(55% 55% at 20% 20%, color-mix(in oklab, var(--chroma-pink) 16%, transparent), transparent 65%),
+    radial-gradient(60% 60% at 80% 80%, color-mix(in oklab, var(--chroma-violet) 18%, transparent), transparent 65%);
+}
+:root[data-theme="light"] .section-gradient-warm::before {
+  background:
+    radial-gradient(55% 55% at 20% 20%, color-mix(in oklab, var(--chroma-pink) 8%, transparent), transparent 65%),
+    radial-gradient(60% 60% at 80% 80%, color-mix(in oklab, var(--chroma-violet) 10%, transparent), transparent 65%);
+}
+
+/* Aurora — layered radial gradients softened by blur */
+.bg-aurora {
+  position: relative;
+  isolation: isolate;
+}
+.bg-aurora::before {
+  content: "";
+  position: absolute;
+  inset: -10%;
+  z-index: -1;
+  background:
+    radial-gradient(40% 40% at 15% 20%, color-mix(in oklab, var(--chroma-violet) 55%, transparent) 0%, transparent 70%),
+    radial-gradient(35% 35% at 85% 30%, color-mix(in oklab, var(--chroma-pink) 50%, transparent) 0%, transparent 70%),
+    radial-gradient(45% 45% at 60% 85%, color-mix(in oklab, var(--chroma-cyan) 45%, transparent) 0%, transparent 70%),
+    radial-gradient(50% 50% at 30% 75%, color-mix(in oklab, var(--color-accent) 45%, transparent) 0%, transparent 70%);
+  filter: blur(60px) saturate(130%);
+  opacity: 0.55;
+  pointer-events: none;
+}
+:root[data-theme="light"] .bg-aurora::before {
+  opacity: 0.35;
+  filter: blur(70px) saturate(110%);
+}
+
+/* Aurora intensities */
+.bg-aurora-soft::before { opacity: 0.28 !important; }
+.bg-aurora-strong::before { opacity: 0.75 !important; }
+
+/* Individual blob — drop anywhere with absolute positioning */
+.blob {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(70px);
+  pointer-events: none;
+  will-change: transform;
+  z-index: 0;
+}
+.blob-violet { background: radial-gradient(circle, var(--chroma-violet) 0%, transparent 65%); }
+.blob-pink   { background: radial-gradient(circle, var(--chroma-pink) 0%, transparent 65%); }
+.blob-cyan   { background: radial-gradient(circle, var(--chroma-cyan) 0%, transparent 65%); }
+.blob-blue   { background: radial-gradient(circle, var(--color-accent) 0%, transparent 65%); }
+.blob-amber  { background: radial-gradient(circle, var(--chroma-amber) 0%, transparent 65%); }
+
+:root[data-theme="light"] .blob { filter: blur(90px); opacity: 0.55; }
+
+/* Slow floating animation for blobs */
+@keyframes blob-float {
+  0%   { transform: translate3d(0, 0, 0) scale(1); }
+  33%  { transform: translate3d(3%, -4%, 0) scale(1.05); }
+  66%  { transform: translate3d(-2%, 3%, 0) scale(0.97); }
+  100% { transform: translate3d(0, 0, 0) scale(1); }
+}
+.blob-float { animation: blob-float 14s ease-in-out infinite; }
+.blob-float-slow { animation: blob-float 22s ease-in-out infinite; }
+
+/* Chroma gradient text fill */
+.text-chroma {
+  background-image: linear-gradient(
+    110deg,
+    var(--chroma-pink) 0%,
+    var(--chroma-violet) 45%,
+    var(--color-accent) 70%,
+    var(--chroma-cyan) 100%
+  );
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+          background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+@keyframes chroma-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50%      { background-position: 100% 50%; }
+}
+.text-chroma-anim { animation: chroma-shift 9s ease-in-out infinite; }
+
+/* Stacked chromatic shadow — reference image "AGENCY" vibe */
+.text-stacked-shadow {
+  position: relative;
+  display: inline-block;
+  color: var(--color-fg);
+  text-shadow:
+    0 4px 0 color-mix(in oklab, var(--chroma-pink) 85%, transparent),
+    0 10px 28px color-mix(in oklab, var(--chroma-pink) 60%, transparent),
+    0 22px 60px color-mix(in oklab, var(--chroma-violet) 55%, transparent);
+}
+:root[data-theme="light"] .text-stacked-shadow {
+  text-shadow:
+    0 4px 0 color-mix(in oklab, var(--chroma-pink) 70%, transparent),
+    0 14px 32px color-mix(in oklab, var(--chroma-pink) 45%, transparent),
+    0 26px 60px color-mix(in oklab, var(--chroma-violet) 40%, transparent);
+}
+
+/* Gradient ring border */
+.ring-chroma {
+  position: relative;
+  border-radius: 9999px;
+}
+.ring-chroma::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    var(--chroma-pink),
+    var(--chroma-violet),
+    var(--color-accent),
+    var(--chroma-cyan)
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+          mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Soft inner glow for dark cards */
+.glow-card {
+  position: relative;
+  border: 1px solid var(--color-line);
+  background: var(--color-bg-elev);
+  border-radius: 1rem;
+  overflow: hidden;
+  isolation: isolate;
+}
+.glow-card::after {
+  content: "";
+  position: absolute;
+  inset: -40%;
+  z-index: -1;
+  background: radial-gradient(
+    50% 50% at 50% 0%,
+    color-mix(in oklab, var(--color-accent) 40%, transparent) 0%,
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity 0.6s var(--ease-out-expo);
+}
+.glow-card:hover::after { opacity: 1; }
+
+/* Prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* --------------------------------------------------------------------
+ * Legacy keyframes (retained for existing utilities)
+ * ------------------------------------------------------------------ */
+
+@keyframes custom-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-30px); }
+}
+.custom-bounce { animation: custom-bounce 5s infinite; }
+.custom-bounce-delay-1 { animation: custom-bounce 5s infinite; animation-delay: 1s; }
+.custom-bounce-delay-2 { animation: custom-bounce 5s infinite; animation-delay: 2s; }
+
+/* --------------------------------------------------------------------
+ * Lenis integration
+ * ------------------------------------------------------------------ */
+
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}

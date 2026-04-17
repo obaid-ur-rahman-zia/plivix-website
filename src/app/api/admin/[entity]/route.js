@@ -1,0 +1,67 @@
+import { NextResponse } from "next/server";
+import { verifyAdminRequest } from "@/lib/admin-auth";
+import { getSupabaseAdmin } from "@/lib/supabase/adminServer";
+
+const TABLES = new Set([
+  "services",
+  "projects",
+  "team",
+  "testimonials",
+  "stats",
+  "internships",
+]);
+
+export async function GET(request, context) {
+  if (!(await verifyAdminRequest(request))) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  const { entity } = await context.params;
+  if (!TABLES.has(entity)) {
+    return NextResponse.json({ error: "Unknown entity" }, { status: 404 });
+  }
+  const admin = getSupabaseAdmin();
+  if (!admin) {
+    return NextResponse.json(
+      { error: "Supabase service role not configured" },
+      { status: 503 }
+    );
+  }
+  const { data, error } = await admin.from(entity).select("*").order("order_index", { ascending: true });
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+  return NextResponse.json({ data: data ?? [] });
+}
+
+export async function PATCH(request, context) {
+  if (!(await verifyAdminRequest(request))) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  const { entity } = await context.params;
+  if (!TABLES.has(entity)) {
+    return NextResponse.json({ error: "Unknown entity" }, { status: 404 });
+  }
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+  }
+  const id = body.id;
+  if (!id) {
+    return NextResponse.json({ error: "id required" }, { status: 400 });
+  }
+  const { id: _drop, ...patch } = body;
+  const admin = getSupabaseAdmin();
+  if (!admin) {
+    return NextResponse.json(
+      { error: "Supabase service role not configured" },
+      { status: 503 }
+    );
+  }
+  const { data, error } = await admin.from(entity).update(patch).eq("id", id).select().single();
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+  return NextResponse.json({ data });
+}

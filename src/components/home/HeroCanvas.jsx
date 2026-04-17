@@ -1,0 +1,313 @@
+"use client";
+
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { EffectComposer, Bloom, Vignette } from "@react-three/postprocessing";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import * as THREE from "three";
+
+const COL = {
+  dark: {
+    color: "#eae3ff",
+    bloom: 1.05,
+    bloomThreshold: 0.3,
+    vignette: 0.55,
+    ambient: 0.4,
+  },
+  light: {
+    color: "#2c2167",
+    bloom: 0.35,
+    bloomThreshold: 0.6,
+    vignette: 0.18,
+    ambient: 0.7,
+  },
+};
+
+/**
+ * HeroCanvas — renders a dense particle cloud shaped like the Plivix logo
+ * mark (the 3-parallelogram icon, not the wordmark).
+ *
+ * Pipeline:
+ *   1. Load /images/logo/logo-light-theme.png (the icon-only mark).
+ *   2. Draw it to an offscreen 2D canvas at a known size.
+ *   3. Walk the alpha channel and emit one particle per opaque pixel.
+ *   4. Upload positions + per-particle seeds/scales into a BufferGeometry.
+ *   5. Render as <points> with a custom ShaderMaterial — soft radial discs,
+ *      sin(time+seed) drift, theme-aware tint uniform.
+ *
+ * Interaction:
+ *   - No auto-rotation.
+ *   - A window pointermove listener smoothly tilts the whole cloud toward
+ *     the cursor (Y rotation on X-axis mouse, X rotation on Y-axis mouse).
+ *   - Camera rig still dollies/sways subtly with scroll progress.
+ */
+export default function HeroCanvas({ progressRef, theme = "dark" }) {
+  const [ready, setReady] = useState(false);
+  useEffect(() => setReady(true), []);
+  if (!ready) return null;
+
+  const mode = theme === "light" ? "light" : "dark";
+  const pal = COL[mode];
+
+  return (
+    <Canvas
+      dpr={[1, 1.5]}
+      gl={{
+        antialias: true,
+        alpha: true,
+        powerPreference: "high-performance",
+        stencil: false,
+        toneMapping: THREE.ACESFilmicToneMapping,
+        toneMappingExposure: mode === "light" ? 1.02 : 1.15,
+      }}
+      camera={{ position: [0, 0, 5.2], fov: 38 }}
+      style={{ background: "transparent" }}
+    >
+      <ambientLight intensity={pal.ambient} />
+
+      <Suspense fallback={null}>
+        <CameraRig progressRef={progressRef} />
+        <PlivixLogoParticles palette={pal} mode={mode} />
+      </Suspense>
+
+      <EffectComposer multisampling={0} disableNormalPass>
+        {/* <Bloom
+          intensity={pal.bloom}
+          luminanceThreshold={pal.bloomThreshold}
+          luminanceSmoothing={0.9}
+          mipmapBlur
+          radius={mode === "light" ? 0.38 : 0.7}
+        /> */}
+        <Vignette eskil={false} offset={0.16} darkness={pal.vignette} />
+      </EffectComposer>
+    </Canvas>
+  );
+}
+
+function CameraRig({ progressRef }) {
+  const { camera } = useThree();
+  useFrame(() => {
+    const s = progressRef?.current ?? 0;
+    // Minimal dolly — no continuous orbit. Gives the cloud a subtle push as
+    // the user starts scrolling, nothing more.
+    const z = THREE.MathUtils.lerp(5.2, 4.6, s);
+    const y = THREE.MathUtils.lerp(0, 0.15, s);
+    camera.position.set(0, y, z);
+    camera.lookAt(0, 0, 0);
+  });
+  return null;
+}
+
+/* ----------------------- Particle logo mark ------------------------------- */
+
+const VERT = /* glsl */ `
+  attribute float aSeed;
+  attribute float aScale;
+
+  uniform float uTime;
+  uniform float uPixel;
+
+  varying float vAlpha;
+
+  void main() {
+    vec3 pos = position;
+
+    // Per-particle drift so the cloud breathes without obscuring the shape.
+    float t = uTime + aSeed * 6.2831;
+    pos.x += sin(t * 0.8) * 0.02;
+    pos.y += cos(t * 0.7 + aSeed) * 0.018;
+    pos.z += sin(t * 1.0 + aSeed * 2.0) * 0.05;
+
+    vec4 mv = modelViewMatrix * vec4(pos, 1.0);
+    gl_Position = projectionMatrix * mv;
+
+    // Much larger base size than before — user asked for bigger particles.
+    float dist = -mv.z;
+    gl_PointSize = aScale * uPixel * (22.0 / max(dist, 0.1));
+
+    vAlpha = 0.7 + 0.3 * aScale;
+  }
+`;
+
+const FRAG = /* glsl */ `
+  precision mediump float;
+
+  uniform vec3 uColor;
+  varying float vAlpha;
+
+  void main() {
+    vec2 uv = gl_PointCoord - 0.5;
+    float d = length(uv);
+    float mask = smoothstep(0.5, 0.1, d);
+    if (mask <= 0.01) discard;
+
+    gl_FragColor = vec4(uColor, mask * vAlpha);
+  }
+`;
+
+function PlivixLogoParticles({ palette, mode }) {
+  const groupRef = useRef(null);
+  const matRef = useRef(null);
+  const pointer = useRef({ x: 0, y: 0 });
+  const target = useRef({ x: 0, y: 0 });
+  const [geom, setGeom] = useState(null);
+
+  /* Load the logo PNG → offscreen canvas → sample particles. Runs once on
+     mount; the resulting positions are theme-agnostic (color is a uniform). */
+  useEffect(() => {
+    let cancelled = false;
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    // The icon-only mark. Alpha channel is what we care about, not color —
+    // the shader tints the particles from the theme palette.
+    img.src = "/images/logo/logo-light-theme.png";
+
+    img.onload = () => {
+      if (cancelled) return;
+
+      const isSmall = typeof window !== "undefined" && window.innerWidth < 768;
+      // Denser than before: 2px stride desktop, 3px mobile.
+      const stride = isSmall ? 3 : 2;
+
+      // Work in a fixed-size canvas preserving the logo's aspect ratio.
+      const naturalAR = (img.naturalWidth || img.width) / (img.naturalHeight || img.height);
+      const W = 360;
+      const H = Math.max(16, Math.round(W / naturalAR));
+
+      const canvas = document.createElement("canvas");
+      canvas.width = W;
+      canvas.height = H;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+      ctx.clearRect(0, 0, W, H);
+      ctx.drawImage(img, 0, 0, W, H);
+
+      let data;
+      try {
+        data = ctx.getImageData(0, 0, W, H).data;
+      } catch {
+        return; // cross-origin taint — skip gracefully
+      }
+
+      // Scale so the mark fills most of the camera's viewport height.
+      // Camera at z=5.2, fov=38° → visible height ≈ 2 * 5.2 * tan(19°) ≈ 3.58.
+      // Target the mark at ~2.8 world units tall so it reads large.
+      const worldH = 2.8;
+      const s = worldH / H;
+
+      const pts = [];
+      for (let y = 0; y < H; y += stride) {
+        for (let x = 0; x < W; x += stride) {
+          const i = (y * W + x) * 4;
+          if (data[i + 3] > 140) {
+            const wx = (x - W / 2) * s;
+            const wy = -(y - H / 2) * s;
+            // Light fuzzy-edge jitter — keeps the cloud from looking stamped.
+            const jx = (Math.random() - 0.5) * 0.02;
+            const jy = (Math.random() - 0.5) * 0.02;
+            const jz = (Math.random() - 0.5) * 0.32;
+            pts.push(wx + jx, wy + jy, jz);
+          }
+        }
+      }
+
+      const count = pts.length / 3;
+      const positions = new Float32Array(pts);
+      const seeds = new Float32Array(count);
+      const scales = new Float32Array(count);
+      for (let i = 0; i < count; i++) {
+        seeds[i] = Math.random();
+        // Wider size variation: most particles are substantial, a few twinkle big.
+        scales[i] = 0.95 + Math.random() * Math.random() * 1.9;
+      }
+      setGeom({ positions, seeds, scales, count });
+    };
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  /* Mouse-driven tilt. Pointer is captured in NDC [-1,1]; smoothed each frame. */
+  useEffect(() => {
+    const onMove = (e) => {
+      target.current.x = (e.clientX / window.innerWidth) * 2 - 1;
+      target.current.y = -((e.clientY / window.innerHeight) * 2 - 1);
+    };
+    window.addEventListener("pointermove", onMove, { passive: true });
+    return () => window.removeEventListener("pointermove", onMove);
+  }, []);
+
+  const uniforms = useMemo(
+    () => ({
+      uTime: { value: 0 },
+      uColor: { value: new THREE.Color(palette.color) },
+      uPixel: {
+        value:
+          typeof window !== "undefined"
+            ? Math.min(window.devicePixelRatio || 1, 2)
+            : 1,
+      },
+    }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
+
+  useFrame((_, delta) => {
+    const ease = Math.min(delta * 4, 1);
+    pointer.current.x += (target.current.x - pointer.current.x) * ease;
+    pointer.current.y += (target.current.y - pointer.current.y) * ease;
+
+    if (groupRef.current) {
+      // Tilt the cloud toward the cursor. NO auto rotation.
+      groupRef.current.rotation.y = pointer.current.x * 0.55;
+      groupRef.current.rotation.x = pointer.current.y * 0.32;
+    }
+    if (matRef.current) {
+      matRef.current.uniforms.uTime.value += delta;
+      matRef.current.uniforms.uColor.value.set(palette.color);
+    }
+  });
+
+  const material = useMemo(() => {
+    return new THREE.ShaderMaterial({
+      vertexShader: VERT,
+      fragmentShader: FRAG,
+      transparent: true,
+      depthWrite: false,
+      // Additive on dark gives the glow look; normal on light keeps the deep
+      // indigo readable against a near-white backdrop.
+      blending: mode === "light" ? THREE.NormalBlending : THREE.AdditiveBlending,
+      uniforms,
+    });
+  }, [mode, uniforms]);
+
+  if (!geom) return null;
+
+  return (
+    <group ref={groupRef} scale={1.15}>
+      <points>
+        <bufferGeometry>
+          <bufferAttribute
+            attach="attributes-position"
+            array={geom.positions}
+            count={geom.count}
+            itemSize={3}
+          />
+          <bufferAttribute
+            attach="attributes-aSeed"
+            array={geom.seeds}
+            count={geom.count}
+            itemSize={1}
+          />
+          <bufferAttribute
+            attach="attributes-aScale"
+            array={geom.scales}
+            count={geom.count}
+            itemSize={1}
+          />
+        </bufferGeometry>
+        <primitive ref={matRef} object={material} attach="material" />
+      </points>
+    </group>
+  );
+}
