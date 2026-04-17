@@ -3,6 +3,7 @@
 -- Same as running migrations in order:
 --   20260417000001_plivix_content_schema.sql
 --   20260418000002_storage_site_media.sql
+--   20260417000003_content_media_columns.sql
 -- After success:  npm run seed   (needs SUPABASE_SERVICE_ROLE_KEY in env)
 -- =============================================================================
 
@@ -20,6 +21,9 @@ create table if not exists public.services (
   features text[] not null default '{}',
   tech_stack text[] not null default '{}',
   icon_name text,
+  image_url text,
+  thumbnail_url text,
+  video_url text,
   order_index int not null default 0,
   published boolean not null default true,
   created_at timestamptz not null default now(),
@@ -36,7 +40,9 @@ create table if not exists public.projects (
   client text,
   category text not null,
   cover_url text,
+  thumbnail_url text,
   gallery_urls text[] not null default '{}',
+  video_urls text[] not null default '{}',
   description text,
   tech_stack text[] not null default '{}',
   year int,
@@ -57,6 +63,8 @@ create table if not exists public.team (
   role text not null,
   bio text,
   image_url text,
+  thumbnail_url text,
+  video_url text,
   socials jsonb not null default '{}'::jsonb,
   order_index int not null default 0,
   active boolean not null default true,
@@ -150,3 +158,51 @@ create policy "Public read site-media"
   on storage.objects for select
   to public
   using (bucket_id = 'site-media');
+
+-- === 20260417000003_content_media_columns.sql ===
+-- Idempotent adds for databases created before media columns existed.
+
+alter table public.services
+  add column if not exists image_url text,
+  add column if not exists thumbnail_url text,
+  add column if not exists video_url text;
+
+alter table public.projects
+  add column if not exists thumbnail_url text,
+  add column if not exists video_urls text[] not null default '{}';
+
+alter table public.team
+  add column if not exists thumbnail_url text,
+  add column if not exists video_url text;
+
+-- === 20260418000004_site_settings.sql ===
+
+create table if not exists public.site_settings (
+  id int primary key check (id = 1),
+  contact_email text,
+  address text,
+  location_tagline text,
+  hours text,
+  socials jsonb not null default '{}'::jsonb,
+  updated_at timestamptz not null default now()
+);
+
+insert into public.site_settings (id, contact_email, address, location_tagline, hours, socials)
+values (
+  1,
+  'hello@plivix-tech.com',
+  null,
+  'Remote · Global',
+  'Mon – Sat · 8:00 – 17:00 UTC+5',
+  '{"linkedin":"https://www.linkedin.com/company/plivix","instagram":"https://www.instagram.com/plivix.technologies/","x":"https://x.com/plivix_tech","upwork":"https://www.upwork.com/agencies/1814949357398654976/"}'::jsonb
+)
+on conflict (id) do nothing;
+
+alter table public.site_settings enable row level security;
+
+drop policy if exists "public read site settings" on public.site_settings;
+
+create policy "public read site settings"
+  on public.site_settings for select
+  to anon, authenticated
+  using (true);

@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { HoverImagePreviewLayer, useHoverImagePreview } from "@/components/HoverImagePreview";
 import { prefersReducedMotion } from "@/lib/scroll/useScrollTriggerSync";
 
 const values = [
@@ -34,6 +35,7 @@ const timeline = [
 
 export default function AboutPage({ team = [], stats = [] }) {
   const rootRef = useRef(null);
+  const { active: hoverImage, bind: bindHoverImage, clear: clearHoverImage } = useHoverImagePreview();
 
   useEffect(() => {
     if (!rootRef.current || prefersReducedMotion()) return;
@@ -165,24 +167,40 @@ export default function AboutPage({ team = [], stats = [] }) {
                 <span className="italic text-[var(--color-fg-muted)]">the work</span>.
               </h2>
             </div>
-            <div className="col-span-12 md:col-span-8 flex flex-col">
-              {team.map((m) => (
-                <div
-                  key={m.name}
-                  data-reveal
-                  className="grid grid-cols-12 gap-6 border-t border-[var(--color-line)] py-8"
-                >
-                  <h3 className="col-span-12 md:col-span-6 font-display text-2xl md:text-3xl tracking-[-0.025em] text-[var(--color-fg)]">
-                    {m.name}
-                  </h3>
-                  <div className="col-span-12 md:col-span-6 text-[var(--color-fg-muted)]">
-                    {m.role}
-                    {m.bio ? (
-                      <p className="mt-2 text-sm leading-relaxed">{m.bio}</p>
-                    ) : null}
+            <div className="col-span-12 md:col-span-8 flex flex-col relative">
+              <HoverImagePreviewLayer active={hoverImage} onClear={clearHoverImage} />
+              {team.map((m) => {
+                const img = m.image_url || m.thumbnail_url;
+                return (
+                  <div
+                    key={m.name}
+                    data-reveal
+                    className="grid grid-cols-12 gap-6 border-t border-[var(--color-line)] py-8"
+                    {...(img ? bindHoverImage(img) : {})}
+                  >
+                    <h3 className="col-span-12 md:col-span-6 font-display text-2xl md:text-3xl tracking-[-0.025em] text-[var(--color-fg)]">
+                      {m.name}
+                    </h3>
+                    <div className="col-span-12 md:col-span-6 text-[var(--color-fg-muted)]">
+                      {m.role}
+                      {m.bio ? (
+                        <p className="mt-2 text-sm leading-relaxed">{m.bio}</p>
+                      ) : null}
+                      {m.video_url ? (
+                        <div className="mt-4 relative w-full max-w-lg aspect-video rounded-xl overflow-hidden border border-[var(--color-line)] bg-black">
+                          {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+                          <video
+                            src={m.video_url}
+                            className="absolute inset-0 w-full h-full object-cover"
+                            controls
+                            playsInline
+                          />
+                        </div>
+                      ) : null}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
               <div className="border-t border-[var(--color-line)]" />
             </div>
           </div>

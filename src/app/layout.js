@@ -6,6 +6,9 @@ import SmoothScroll from "../components/SmoothScroll";
 import GsapBootstrap from "../components/GsapBootstrap";
 import { ThemeProvider } from "../components/theme/ThemeProvider";
 import ThemeScript from "../components/theme/ThemeScript";
+import { SiteSettingsProvider } from "../components/SiteSettingsContext";
+import { getSiteSettings } from "@/lib/supabase/queries";
+import { sameAsFromSocials } from "@/lib/siteSocials";
 
 // Body — clean, neutral, high legibility.
 const inter = Inter({
@@ -55,12 +58,14 @@ export const metadata = {
     url: "https://www.plivix-tech.com",
     type: "website",
     siteName: "Plivix Technologies",
+    // Image file must match width/height exactly (WhatsApp/Facebook reject mismatches).
     images: [
       {
         url: "/images/og-image/og.png",
         width: 1200,
         height: 630,
         alt: "Plivix Technologies",
+        type: "image/png",
       },
     ],
   },
@@ -75,7 +80,10 @@ export const metadata = {
   icons: { icon: "/favicon.ico" },
 };
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
+  const siteSettings = await getSiteSettings();
+  const sameAs = sameAsFromSocials(siteSettings.socials);
+
   return (
     <html
       lang="en"
@@ -93,11 +101,7 @@ export default function RootLayout({ children }) {
               name: "Plivix Technologies",
               url: "https://www.plivix-tech.com",
               logo: "/images/logo/logo-full.png",
-              sameAs: [
-                "https://www.linkedin.com/company/plivix",
-                "https://www.instagram.com/plivix.technologies/",
-                "https://x.com/plivix_tech",
-              ],
+              ...(sameAs.length > 0 ? { sameAs } : {}),
               description:
                 "Plivix Technologies builds production-grade web, mobile, AI and data platforms.",
             }),
@@ -111,17 +115,19 @@ export default function RootLayout({ children }) {
         >
           Skip to content
         </a>
-        <ThemeProvider>
-          <LoadingProvider>
-            <GsapBootstrap />
-            <SmoothScroll>
-              <LoadingMonitor />
-              <div id="root" className="w-full overflow-x-hidden">
-                {children}
-              </div>
-            </SmoothScroll>
-          </LoadingProvider>
-        </ThemeProvider>
+        <SiteSettingsProvider value={siteSettings}>
+          <ThemeProvider>
+            <LoadingProvider>
+              <GsapBootstrap />
+              <SmoothScroll>
+                <LoadingMonitor />
+                <div id="root" className="w-full overflow-x-hidden">
+                  {children}
+                </div>
+              </SmoothScroll>
+            </LoadingProvider>
+          </ThemeProvider>
+        </SiteSettingsProvider>
       </body>
     </html>
   );

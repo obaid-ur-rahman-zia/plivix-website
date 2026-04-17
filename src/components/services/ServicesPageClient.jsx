@@ -2,8 +2,10 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import { HoverImagePreviewLayer, useHoverImagePreview } from "@/components/HoverImagePreview";
 
 export default function ServicesPageClient({ services = [] }) {
+  const { active: hoverImage, bind: bindHoverImage, clear: clearHoverImage } = useHoverImagePreview();
   const categories = useMemo(() => {
     const set = new Set(services.map((s) => s.category));
     return ["All", ...Array.from(set)];
@@ -52,12 +54,16 @@ export default function ServicesPageClient({ services = [] }) {
         </div>
       </section>
 
-      <section className="container-edge pb-32 md:pb-48">
-        {visible.map((s, i) => (
+      <section className="container-edge pb-32 md:pb-48 relative">
+        <HoverImagePreviewLayer active={hoverImage} onClear={clearHoverImage} />
+        {visible.map((s, i) => {
+          const img = s.image_url || s.thumbnail_url;
+          return (
           <article
             key={s.slug}
             id={s.slug}
             className="scroll-mt-32 grid grid-cols-12 gap-6 md:gap-10 border-t border-[var(--color-line)] py-12 md:py-20"
+            {...(img ? bindHoverImage(img) : {})}
           >
             <div className="col-span-12 md:col-span-2 flex md:flex-col items-baseline gap-4 md:gap-2 eyebrow text-[var(--color-fg-muted)]">
               <span className="text-[var(--color-accent)]">
@@ -105,7 +111,8 @@ export default function ServicesPageClient({ services = [] }) {
               </div>
             </div>
           </article>
-        ))}
+          );
+        })}
         <div className="border-t border-[var(--color-line)]" />
       </section>
     </div>

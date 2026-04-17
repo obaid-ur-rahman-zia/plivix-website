@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import emailjs from "emailjs-com";
+import { useSiteSettings } from "@/components/SiteSettingsContext";
 
 const SERVICE_OPTIONS = [
   "Full-Stack Web",
@@ -12,18 +13,26 @@ const SERVICE_OPTIONS = [
   "Other",
 ];
 
-const CONTACT_METHODS = [
-  { label: "Email", value: "hello@plivix-tech.com", href: "mailto:hello@plivix-tech.com" },
-  { label: "Hours", value: "Mon – Sat · 8:00 – 17:00 UTC+5" },
-  { label: "Location", value: "Remote · Global" },
-];
-
 const EMAILJS_SERVICE_ID = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || "service_h5px9eg";
 const EMAILJS_TEMPLATE_OWNER = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_OWNER || "template_s7qxn9l";
 const EMAILJS_TEMPLATE_SENDER = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_SENDER || "template_4rnbj33";
 const EMAILJS_PUBLIC_KEY = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || "fnuDw7BBMoDaMZA6t";
 
 export default function ContactPage() {
+  const site = useSiteSettings();
+  const contactMethods = useMemo(() => {
+    const email = site.contact_email?.trim() || "hello@plivix-tech.com";
+    const hours = site.hours?.trim() || "Mon – Sat · 8:00 – 17:00 UTC+5";
+    const locLine = site.location_tagline?.trim() || "Remote · Global";
+    const addr = site.address?.trim();
+    const locationValue = addr ? `${locLine}\n\n${addr}` : locLine;
+    return [
+      { label: "Email", value: email, href: `mailto:${email}` },
+      { label: "Hours", value: hours },
+      { label: "Location", value: locationValue },
+    ];
+  }, [site]);
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -188,7 +197,7 @@ export default function ContactPage() {
                 Direct
               </div>
               <ul className="flex flex-col gap-5">
-                {CONTACT_METHODS.map((m) => (
+                {contactMethods.map((m) => (
                   <li key={m.label} className="border-t border-[var(--color-line)] pt-4">
                     <div className="eyebrow text-[var(--color-fg-muted)] mb-1">
                       {m.label}
@@ -202,7 +211,9 @@ export default function ContactPage() {
                         {m.value}
                       </a>
                     ) : (
-                      <span className="text-[var(--color-fg)]">{m.value}</span>
+                      <span className="text-[var(--color-fg)] whitespace-pre-line">
+                        {m.value}
+                      </span>
                     )}
                   </li>
                 ))}

@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useMemo } from "react";
 import { gsap } from "gsap";
+import { useSiteSettings } from "../SiteSettingsContext";
+import { getSocialLinkEntries } from "@/lib/siteSocials";
 
 const menuLinks = [
   { path: "/", label: "Home", index: "01" },
@@ -13,13 +15,12 @@ const menuLinks = [
   { path: "/contact", label: "Contact", index: "06" },
 ];
 
-const socialLinks = [
-  { label: "LinkedIn", href: "https://www.linkedin.com/company/plivix" },
-  { label: "Instagram", href: "https://www.instagram.com/plivix.technologies/" },
-  { label: "X / Twitter", href: "https://x.com/plivix_tech" },
-];
-
 export default function Menu({ open, onClose }) {
+  const settings = useSiteSettings();
+  const socialLinks = useMemo(
+    () => getSocialLinkEntries(settings.socials),
+    [settings.socials]
+  );
   const overlayRef = useRef(null);
   const tlRef = useRef(null);
 

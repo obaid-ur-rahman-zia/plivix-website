@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { HoverImagePreviewLayer, useHoverImagePreview } from "@/components/HoverImagePreview";
 import { prefersReducedMotion } from "@/lib/scroll/useScrollTriggerSync";
 
 /**
@@ -27,6 +28,7 @@ export default function ServicesPinScroll({ services = [] }) {
   const detailRef = useRef(null);
   const [activeIdx, setActiveIdx] = useState(0);
   const count = services.length;
+  const { active: hoverImage, bind: bindHoverImage, clear: clearHoverImage } = useHoverImagePreview();
 
   useEffect(() => {
     if (!sectionRef.current || count === 0) return;
@@ -119,6 +121,7 @@ export default function ServicesPinScroll({ services = [] }) {
       id="services"
       className="section-gradient-alt relative border-t border-[var(--color-line)]"
     >
+      <HoverImagePreviewLayer active={hoverImage} onClear={clearHoverImage} />
       {/* Desktop pinned panel — content capped at 80vh so it never overflows
           the viewport. The outer pin wrapper still takes the full svh so
           the pin behaves correctly; the inner .pin-body fits within 80vh. */}
@@ -140,8 +143,13 @@ export default function ServicesPinScroll({ services = [] }) {
             <ul className="flex flex-col min-h-0 overflow-hidden">
               {services.map((s, i) => {
                 const isActive = i === activeIdx;
+                const rowImg = s.image_url || s.thumbnail_url;
                 return (
-                  <li key={s.slug} className="border-t border-[var(--color-line)]">
+                  <li
+                    key={s.slug}
+                    className="border-t border-[var(--color-line)]"
+                    {...(rowImg ? bindHoverImage(rowImg) : {})}
+                  >
                     <Link
                       href={`/services#${s.slug}`}
                       className="group relative flex items-center gap-5 py-3 lg:py-4"
@@ -221,6 +229,29 @@ export default function ServicesPinScroll({ services = [] }) {
             >
               {active.description}
             </p>
+            {(active.image_url || active.thumbnail_url || active.video_url) && (
+              <div
+                data-detail-item
+                className="relative w-full max-w-xl aspect-video rounded-xl overflow-hidden border border-[var(--color-line)] bg-[var(--color-bg-soft)] shrink-0"
+              >
+                {active.video_url ? (
+                  // eslint-disable-next-line jsx-a11y/media-has-caption -- marketing clip; no transcript
+                  <video
+                    src={active.video_url}
+                    className="absolute inset-0 w-full h-full object-cover"
+                    controls
+                    playsInline
+                  />
+                ) : (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={active.image_url || active.thumbnail_url}
+                    alt=""
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+                )}
+              </div>
+            )}
             <div
               data-detail-item
               className="grid grid-cols-2 gap-x-6 gap-y-1 max-w-[56ch] border-t border-[var(--color-line)] pt-3 shrink-0"
@@ -271,10 +302,13 @@ export default function ServicesPinScroll({ services = [] }) {
           </div>
           <h2 className="heading-lg text-[var(--color-fg)]">Services.</h2>
         </div>
-        {services.map((s, i) => (
+        {services.map((s, i) => {
+          const rowImg = s.image_url || s.thumbnail_url;
+          return (
           <article
             key={s.slug}
             className="border-t border-[var(--color-line)] pt-6 flex flex-col gap-4"
+            {...(rowImg ? bindHoverImage(rowImg) : {})}
           >
             <div className="flex items-baseline justify-between eyebrow text-[var(--color-fg-muted)]">
               <span className="text-[var(--color-accent)]">
@@ -300,7 +334,8 @@ export default function ServicesPinScroll({ services = [] }) {
               ))}
             </div>
           </article>
-        ))}
+          );
+        })}
       </div>
     </section>
   );

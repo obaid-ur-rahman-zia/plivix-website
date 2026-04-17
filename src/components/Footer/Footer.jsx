@@ -3,8 +3,10 @@
 import Link from "next/link";
 import Logo from "../Logo";
 import ThemeToggle from "../theme/ThemeToggle";
+import { useSiteSettings } from "../SiteSettingsContext";
+import { getSocialLinkEntries } from "@/lib/siteSocials";
 
-const columns = [
+const staticColumns = [
   {
     title: "Sitemap",
     links: [
@@ -26,18 +28,23 @@ const columns = [
       { label: "Data Science", href: "/services#data-science" },
     ],
   },
-  {
-    title: "Social",
-    links: [
-      { label: "LinkedIn", href: "https://www.linkedin.com/company/plivix", external: true },
-      { label: "Instagram", href: "https://www.instagram.com/plivix.technologies/", external: true },
-      { label: "X / Twitter", href: "https://x.com/plivix_tech", external: true },
-      { label: "Upwork", href: "https://www.upwork.com/agencies/1814949357398654976/", external: true },
-    ],
-  },
 ];
 
 export default function Footer() {
+  const settings = useSiteSettings();
+  const socialLinks = getSocialLinkEntries(settings.socials).map((s) => ({
+    label: s.label,
+    href: s.href,
+    external: true,
+  }));
+  const columns =
+    socialLinks.length > 0
+      ? [...staticColumns, { title: "Social", links: socialLinks }]
+      : staticColumns;
+
+  const email = settings.contact_email?.trim() || "hello@plivix-tech.com";
+  const locationLine = settings.location_tagline?.trim() || "Remote · Global";
+
   return (
     <footer className="section-gradient-alt relative border-t border-[var(--color-line)]">
       <div className="container-edge pt-24 md:pt-32 pb-10 flex flex-col gap-16 md:gap-24 relative z-10">
@@ -79,14 +86,20 @@ export default function Footer() {
           <div className="col-span-12 md:col-span-3 flex flex-col gap-3">
             <div className="eyebrow text-[var(--color-fg-muted)]">Contact</div>
             <a
-              href="mailto:hello@plivix-tech.com"
+              href={`mailto:${email}`}
               data-cursor="hover"
               className="text-[var(--color-fg)] underline-grow"
             >
-              hello@plivix-tech.com
+              {email}
             </a>
-            <div className="text-sm text-[var(--color-fg-muted)]">
-              Remote · Global
+            <div className="text-sm text-[var(--color-fg-muted)] whitespace-pre-line">
+              {locationLine}
+              {settings.address?.trim() ? (
+                <>
+                  {"\n"}
+                  {settings.address.trim()}
+                </>
+              ) : null}
             </div>
           </div>
           {columns.map((col) => (

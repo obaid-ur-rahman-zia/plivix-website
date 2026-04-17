@@ -115,10 +115,8 @@ export default function ProjectsShowcase({ projects = [] }) {
             className="absolute inset-y-0 left-0 flex items-center gap-6 lg:gap-8 pl-[clamp(1.25rem,4vw,3rem)] pr-[25vw] will-change-transform"
           >
             {projects.map((p, i) => (
-              <Link
+              <div
                 key={p.slug}
-                href={`/portfolio/${p.slug}`}
-                data-cursor="hover"
                 className="group relative flex-none w-[80vw] sm:w-[60vw] md:w-[48vw] lg:w-[38vw] xl:w-[32vw] max-w-[640px] h-[70%] flex flex-col"
               >
                 <div className="flex items-baseline justify-between eyebrow text-[var(--color-fg-muted)] mb-4">
@@ -127,23 +125,39 @@ export default function ProjectsShowcase({ projects = [] }) {
                     {p.category} · {p.year}
                   </span>
                 </div>
-                <div className="relative flex-1 min-h-0 overflow-hidden border border-[var(--color-line)] rounded-sm">
-                  <ProjectCover project={p} />
-                </div>
-                <div className="flex flex-col gap-2 mt-5">
-                  <h3 className="font-display text-xl lg:text-2xl xl:text-3xl leading-[1.05] tracking-[-0.02em] text-[var(--color-fg)]">
-                    {p.title}
-                  </h3>
-                  <p className="text-sm text-[var(--color-fg-muted)] line-clamp-2">
-                    {p.description}
-                  </p>
-                  <div className="flex flex-wrap gap-x-3 gap-y-1 font-mono text-[11px] text-[var(--color-fg-muted)] mt-1">
-                    {p.tech_stack?.slice(0, 4).map((t) => (
-                      <span key={t}>{t}</span>
-                    ))}
+                <Link
+                  href={`/portfolio/${p.slug}`}
+                  data-cursor="hover"
+                  className="flex min-h-0 flex-1 flex-col focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)] rounded-sm"
+                >
+                  <div className="relative flex-1 min-h-0 overflow-hidden border border-[var(--color-line)] rounded-sm">
+                    <ProjectCover project={p} />
                   </div>
-                </div>
-              </Link>
+                  <div className="flex flex-col gap-2 mt-5">
+                    <h3 className="font-display text-xl lg:text-2xl xl:text-3xl leading-[1.05] tracking-[-0.02em] text-[var(--color-fg)] group-hover:text-[var(--color-accent)] transition-colors">
+                      {p.title}
+                    </h3>
+                    <p className="text-sm text-[var(--color-fg-muted)] line-clamp-2">
+                      {p.description}
+                    </p>
+                    <div className="flex flex-wrap gap-x-3 gap-y-1 font-mono text-[11px] text-[var(--color-fg-muted)] mt-1">
+                      {p.tech_stack?.slice(0, 4).map((t) => (
+                        <span key={t}>{t}</span>
+                      ))}
+                    </div>
+                  </div>
+                </Link>
+                {p.live_url ? (
+                  <a
+                    href={p.live_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-3 text-xs font-medium text-[var(--color-accent)] hover:underline self-start"
+                  >
+                    Project link ↗
+                  </a>
+                ) : null}
+              </div>
             ))}
           </div>
         </div>
@@ -173,27 +187,35 @@ export default function ProjectsShowcase({ projects = [] }) {
         <div className="overflow-x-auto snap-x snap-mandatory -mx-[clamp(1.25rem,4vw,3rem)] px-[clamp(1.25rem,4vw,3rem)] pb-10">
           <div className="flex gap-4 w-max">
             {projects.map((p, i) => (
-              <Link
-                key={p.slug}
-                href={`/portfolio/${p.slug}`}
-                className="group snap-start flex-none w-[78vw] flex flex-col"
-              >
+              <div key={p.slug} className="group snap-start flex-none w-[78vw] flex flex-col">
                 <div className="flex items-baseline justify-between eyebrow text-[var(--color-fg-muted)] mb-3">
                   <span>{String(i + 1).padStart(2, "0")}</span>
                   <span>
                     {p.category} · {p.year}
                   </span>
                 </div>
-                <div className="relative aspect-[4/3] overflow-hidden border border-[var(--color-line)] rounded-sm">
-                  <ProjectCover project={p} />
-                </div>
-                <h3 className="font-display text-xl leading-[1.05] tracking-[-0.02em] text-[var(--color-fg)] mt-4">
-                  {p.title}
-                </h3>
-                <p className="text-sm text-[var(--color-fg-muted)] mt-1 line-clamp-2">
-                  {p.description}
-                </p>
-              </Link>
+                <Link href={`/portfolio/${p.slug}`} className="block focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)] rounded-sm">
+                  <div className="relative aspect-[4/3] overflow-hidden border border-[var(--color-line)] rounded-sm">
+                    <ProjectCover project={p} />
+                  </div>
+                  <h3 className="font-display text-xl leading-[1.05] tracking-[-0.02em] text-[var(--color-fg)] mt-4 group-hover:text-[var(--color-accent)] transition-colors">
+                    {p.title}
+                  </h3>
+                  <p className="text-sm text-[var(--color-fg-muted)] mt-1 line-clamp-2">
+                    {p.description}
+                  </p>
+                </Link>
+                {p.live_url ? (
+                  <a
+                    href={p.live_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-2 text-xs font-medium text-[var(--color-accent)] hover:underline"
+                  >
+                    Project link ↗
+                  </a>
+                ) : null}
+              </div>
             ))}
           </div>
         </div>
@@ -203,12 +225,13 @@ export default function ProjectsShowcase({ projects = [] }) {
 }
 
 function ProjectCover({ project }) {
-  if (project.cover_url) {
+  const src = project.thumbnail_url || project.cover_url;
+  if (src) {
     return (
       <>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src={project.cover_url}
+          src={src}
           alt={project.title}
           loading="lazy"
           className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1.2s] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.04]"

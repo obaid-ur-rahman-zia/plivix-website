@@ -16,6 +16,7 @@ import { team as localTeam } from "@/lib/content/team";
 import { testimonials as localTestimonials } from "@/lib/content/testimonials";
 import { stats as localStats } from "@/lib/content/stats";
 import { internships as localInternships } from "@/lib/content/internships";
+import { defaultSiteSettings } from "@/lib/content/siteSettings";
 
 function getServerClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -93,6 +94,32 @@ export async function getStats() {
 
 export async function getActiveInternships() {
   return query("internships", localInternships, { is_active: true });
+}
+
+function mergeSiteSettings(row) {
+  const socials = {
+    ...defaultSiteSettings.socials,
+    ...(row?.socials && typeof row.socials === "object" ? row.socials : {}),
+  };
+  return {
+    ...defaultSiteSettings,
+    ...row,
+    socials,
+  };
+}
+
+/** Public site contact block: email, address, hours, social URLs (footer, menu, contact page). */
+export async function getSiteSettings() {
+  const client = getServerClient();
+  if (!client) return mergeSiteSettings(null);
+
+  try {
+    const { data, error } = await client.from("site_settings").select("*").eq("id", 1).maybeSingle();
+    if (error || !data) return mergeSiteSettings(null);
+    return mergeSiteSettings(data);
+  } catch {
+    return mergeSiteSettings(null);
+  }
 }
 
 /**

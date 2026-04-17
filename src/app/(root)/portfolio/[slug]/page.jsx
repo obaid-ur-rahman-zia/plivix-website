@@ -46,14 +46,28 @@ export default async function ProjectPage({ params }) {
         <p className="mt-10 max-w-[56ch] text-lg text-[var(--color-fg-muted)] leading-relaxed">
           {project.description}
         </p>
+        {project.live_url ? (
+          <p className="mt-8">
+            <a
+              href={project.live_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-cursor="hover"
+              className="inline-flex items-center gap-2 rounded-full border border-[var(--color-line)] bg-[var(--color-bg-elev)] px-5 py-2.5 text-sm text-[var(--color-fg)] hover:border-[var(--color-accent)] transition-colors"
+            >
+              Open project link
+              <span aria-hidden>↗</span>
+            </a>
+          </p>
+        ) : null}
       </header>
 
       <section className="container-edge pb-16 md:pb-24">
         <div className="relative aspect-[16/9] overflow-hidden border border-[var(--color-line)]">
-          {project.cover_url ? (
+          {project.cover_url || project.thumbnail_url ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
-              src={project.cover_url}
+              src={project.cover_url || project.thumbnail_url}
               alt={project.title}
               className="absolute inset-0 w-full h-full object-cover"
             />
@@ -62,6 +76,23 @@ export default async function ProjectPage({ params }) {
           )}
         </div>
       </section>
+
+      {Array.isArray(project.video_urls) && project.video_urls.length > 0 && (
+        <section className="container-edge pb-16 md:pb-24 space-y-6">
+          <div className="eyebrow text-[var(--color-fg-muted)]">Video</div>
+          <div className="flex flex-col gap-8">
+            {project.video_urls.map((url) => (
+              <div
+                key={url}
+                className="relative aspect-video w-full overflow-hidden border border-[var(--color-line)] bg-black rounded-xl"
+              >
+                {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+                <video src={url} className="absolute inset-0 w-full h-full object-contain" controls playsInline />
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       <section className="container-edge pb-24 md:pb-32">
         <div className="grid grid-cols-12 gap-6 md:gap-10 border-t border-[var(--color-line)] pt-12">

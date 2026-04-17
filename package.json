@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "postbuild": "next-sitemap",
-    "seed": "node scripts/seed.mjs"
+    "seed": "node scripts/seed.mjs",
+    "resize-og": "node scripts/resize-og.mjs"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
@@ -25,6 +26,7 @@
     "postprocessing": "^6.39.0",
     "react": "19.1.0",
     "react-dom": "19.1.0",
+    "react-easy-crop": "^5.5.7",
     "three": "0.183.2"
   },
   "devDependencies": {
@@ -34,6 +36,7 @@
     "dotenv": "^17.4.2",
     "eslint": "^9",
     "eslint-config-next": "^15.5.15",
+    "sharp": "^0.34.5",
     "tailwind-merge": "^3.3.1",
     "tailwindcss": "^4.1.11"
   }

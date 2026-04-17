@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getActiveInternships } from "@/lib/supabase/queries";
+import { getActiveInternships, getSiteSettings } from "@/lib/supabase/queries";
 
 export const revalidate = 3600;
 
@@ -10,7 +10,8 @@ export const metadata = {
 };
 
 export default async function InternshipsPage() {
-  const roles = await getActiveInternships();
+  const [roles, site] = await Promise.all([getActiveInternships(), getSiteSettings()]);
+  const applyEmail = site.contact_email?.trim() || "hello@plivix-tech.com";
 
   return (
     <div className="pt-32 md:pt-40">
@@ -64,7 +65,7 @@ export default async function InternshipsPage() {
                     data-cursor="hover"
                     className="underline-grow text-[var(--color-fg)]"
                   >
-                    Apply → hello@plivix-tech.com
+                    Apply → {applyEmail}
                   </Link>
                 </div>
               </div>
