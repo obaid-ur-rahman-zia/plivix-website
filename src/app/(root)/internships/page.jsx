@@ -14,15 +14,15 @@ export default async function InternshipsPage() {
   const applyEmail = site.contact_email?.trim() || "hello@plivix-tech.com";
 
   return (
-    <div className="pt-32 md:pt-40">
-      <section className="container-edge pb-20 md:pb-32">
+    <div className="section-gradient pt-32 md:pt-40">
+      <section className="section-gradient-alt container-edge pb-20 md:pb-32">
         <div className="eyebrow mb-6 flex items-center gap-3">
           <span className="w-8 h-px bg-[var(--color-fg-muted)]" />
           <span>Careers</span>
         </div>
         <h1 className="heading-xl text-[var(--color-fg)] max-w-[18ch]">
           Learn by{" "}
-          <span className="italic text-[var(--color-fg-muted)]">shipping</span>.
+          <span className="italic text-heading-accent">shipping</span>.
         </h1>
         <p className="mt-10 max-w-[60ch] text-lg text-[var(--color-fg-muted)] leading-relaxed">
           Our internships are scoped slices of real client engagements. You will
@@ -31,7 +31,7 @@ export default async function InternshipsPage() {
         </p>
       </section>
 
-      <section className="container-edge pb-32 md:pb-48">
+      <section className="section-gradient-warm container-edge pb-32 md:pb-48">
         {roles.length === 0 ? (
           <div className="border-t border-[var(--color-line)] py-24 text-center text-[var(--color-fg-muted)]">
             No open roles right now. Check back soon.

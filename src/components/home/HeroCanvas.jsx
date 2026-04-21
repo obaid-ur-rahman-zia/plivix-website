@@ -1,6 +1,7 @@
 "use client";
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { OrbitControls } from "@react-three/drei";
 import { EffectComposer, Vignette } from "@react-three/postprocessing";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
@@ -42,6 +43,7 @@ const COL = {
  */
 export default function HeroCanvas({ progressRef, theme = "dark", isMobile = false }) {
   const [ready, setReady] = useState(false);
+  const orbitingRef = useRef(false);
   useEffect(() => setReady(true), []);
   if (!ready) return null;
 
@@ -72,8 +74,23 @@ export default function HeroCanvas({ progressRef, theme = "dark", isMobile = fal
       <ambientLight intensity={isMobile ? pal.ambient * 0.85 : pal.ambient} />
 
       <Suspense fallback={null}>
-        <CameraRig progressRef={progressRef} />
+        <CameraRig progressRef={progressRef} orbitingRef={orbitingRef} />
         <PlivixLogoParticles palette={pal} mode={mode} isMobile={isMobile} />
+        <OrbitControls
+          enablePan={false}
+          enableZoom={false}
+          enableDamping
+          dampingFactor={0.08}
+          rotateSpeed={isMobile ? 0.5 : 0.7}
+          minPolarAngle={Math.PI * 0.33}
+          maxPolarAngle={Math.PI * 0.67}
+          onStart={() => {
+            orbitingRef.current = true;
+          }}
+          onEnd={() => {
+            orbitingRef.current = false;
+          }}
+        />
       </Suspense>
 
       {!isMobile && (
@@ -85,9 +102,10 @@ export default function HeroCanvas({ progressRef, theme = "dark", isMobile = fal
   );
 }
 
-function CameraRig({ progressRef }) {
+function CameraRig({ progressRef, orbitingRef }) {
   const { camera } = useThree();
   useFrame(() => {
+    if (orbitingRef?.current) return;
     const s = progressRef?.current ?? 0;
     // Minimal dolly — no continuous orbit. Gives the cloud a subtle push as
     // the user starts scrolling, nothing more.

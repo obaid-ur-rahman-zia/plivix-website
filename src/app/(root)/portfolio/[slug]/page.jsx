@@ -143,8 +143,8 @@ export default async function ProjectPage({ params }) {
   const mediaItems = toMediaItems(project);
 
   return (
-    <article className="pt-32 md:pt-40">
-      <header className="container-edge pb-16 md:pb-24">
+    <article className="section-gradient pt-32 md:pt-40">
+      <header className="section-gradient-alt container-edge pb-16 md:pb-24">
         <div className="eyebrow mb-6 flex items-center gap-3">
           <span className="w-8 h-px bg-[var(--color-fg-muted)]" />
           <span>
@@ -173,7 +173,7 @@ export default async function ProjectPage({ params }) {
         ) : null}
       </header>
 
-      <section className="container-edge pb-16 md:pb-24">
+      <section className="section-gradient-warm container-edge pb-16 md:pb-24">
         <div className="relative aspect-[16/9] overflow-hidden border border-[var(--color-line)]">
           {project.cover_url || project.thumbnail_url ? (
             // eslint-disable-next-line @next/next/no-img-element

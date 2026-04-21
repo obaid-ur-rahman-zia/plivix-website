@@ -58,7 +58,7 @@ export default function AboutPage({ team = [], stats = [] }) {
   }, []);
 
   return (
-    <div ref={rootRef} className="pt-32 md:pt-40">
+    <div ref={rootRef} className="section-gradient pt-32 md:pt-40">
       {/* Hero */}
       <section className="container-edge pb-24 md:pb-32">
         <div className="eyebrow mb-6 flex items-center gap-3">
@@ -67,7 +67,7 @@ export default function AboutPage({ team = [], stats = [] }) {
         </div>
         <h1 className="heading-xl text-[var(--color-fg)] max-w-[18ch]">
           A small team,{" "}
-          <span className="italic text-[var(--color-fg-muted)]">deep</span> craft.
+          <span className="italic text-heading-accent">deep</span> craft.
         </h1>
         <p
           data-reveal
@@ -81,7 +81,7 @@ export default function AboutPage({ team = [], stats = [] }) {
 
       {/* Stats */}
       {stats?.length > 0 && (
-        <section className="border-t border-[var(--color-line)]">
+        <section className="section-gradient-alt border-t border-[var(--color-line)]">
           <div className="container-edge grid grid-cols-2 md:grid-cols-4">
             {stats.map((s, i) => (
               <div
@@ -103,13 +103,13 @@ export default function AboutPage({ team = [], stats = [] }) {
       )}
 
       {/* Values */}
-      <section className="container-edge border-t border-[var(--color-line)] py-24 md:py-32">
+      <section className="section-gradient-warm container-edge border-t border-[var(--color-line)] py-24 md:py-32">
         <div className="grid grid-cols-12 gap-6 md:gap-10">
           <div className="col-span-12 md:col-span-4">
             <div className="eyebrow text-[var(--color-fg-muted)] mb-6">How we work</div>
             <h2 className="heading-md text-[var(--color-fg)]">
               Values{" "}
-              <span className="italic text-[var(--color-fg-muted)]">we live by</span>.
+              <span className="italic text-heading-accent">we live by</span>.
             </h2>
           </div>
           <div className="col-span-12 md:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-14">
@@ -164,7 +164,7 @@ export default function AboutPage({ team = [], stats = [] }) {
               <div className="eyebrow text-[var(--color-fg-muted)] mb-6">Team</div>
               <h2 className="heading-md text-[var(--color-fg)]">
                 People behind{" "}
-                <span className="italic text-[var(--color-fg-muted)]">the work</span>.
+                <span className="italic text-heading-accent">the work</span>.
               </h2>
             </div>
             <div className="col-span-12 md:col-span-8 flex flex-col relative">

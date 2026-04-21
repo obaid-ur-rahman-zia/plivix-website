@@ -97,7 +97,7 @@ export default function Hero() {
   return (
     <section
       ref={sectionRef}
-      className="hero relative w-full isolate overflow-hidden"
+      className="hero relative w-full isolate overflow-hidden select-none"
       style={{ height: "100svh", minHeight: "min(100svh, 640px)" }}
     >
       {/* ───── BACKDROP ───── */}
@@ -108,7 +108,7 @@ export default function Hero() {
       {/* 3D scene — right column on desktop; on mobile: short bottom strip so it never covers CTAs/chips */}
       <div
         aria-hidden
-        className="pointer-events-none z-[1] absolute bottom-0 left-1/2 w-[min(88%,360px)] -translate-x-1/2 h-[min(18vh,148px)] sm:h-[min(28vh,220px)] sm:left-auto sm:translate-x-0 sm:right-0 sm:w-full md:h-[min(38vh,320px)] lg:bottom-auto lg:top-0 lg:left-auto lg:h-full lg:w-[min(50%,620px)]"
+        className="pointer-events-auto z-[1] absolute bottom-0 left-1/2 w-[min(88%,360px)] -translate-x-1/2 h-[min(18vh,148px)] sm:h-[min(28vh,220px)] sm:left-auto sm:translate-x-0 sm:right-0 sm:w-full md:h-[min(38vh,320px)] lg:bottom-auto lg:top-0 lg:left-auto lg:h-full lg:w-[min(50%,620px)]"
       >
         <HeroCanvas progressRef={progressRef} theme={theme} isMobile={isMobile} />
       </div>

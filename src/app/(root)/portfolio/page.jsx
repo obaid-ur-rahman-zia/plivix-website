@@ -13,15 +13,15 @@ export default async function PortfolioPage() {
   const projects = await getAllProjects();
 
   return (
-    <div className="pt-32 md:pt-40">
-      <section className="container-edge pb-16 md:pb-24">
+    <div className="section-gradient pt-32 md:pt-40">
+      <section className="section-gradient-alt container-edge pb-16 md:pb-24">
         <div className="eyebrow mb-6 flex items-center gap-3">
           <span className="w-8 h-px bg-[var(--color-fg-muted)]" />
           <span>Selected work</span>
         </div>
         <h1 className="heading-xl text-[var(--color-fg)] max-w-[20ch]">
           Systems we&rsquo;ve{" "}
-          <span className="italic text-[var(--color-fg-muted)]">shipped</span>.
+          <span className="italic text-heading-accent">shipped</span>.
         </h1>
         <p className="mt-10 max-w-[56ch] text-lg text-[var(--color-fg-muted)] leading-relaxed">
           A sample of recent engagements across web, mobile, AI automation,

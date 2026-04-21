@@ -572,6 +572,11 @@ body::-webkit-scrollbar-thumb {
 }
 .text-chroma-anim { animation: chroma-shift 9s ease-in-out infinite; }
 
+/* Slightly richer heading accent than muted gray (for italic lead words). */
+.text-heading-accent {
+  color: color-mix(in oklab, var(--color-fg) 62%, var(--color-accent) 38%);
+}
+
 /* Stacked chromatic shadow — reference image "AGENCY" vibe */
 .text-stacked-shadow {
   position: relative;

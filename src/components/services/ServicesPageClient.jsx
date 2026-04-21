@@ -19,7 +19,7 @@ export default function ServicesPageClient({ services = [] }) {
   }, [services, active]);
 
   return (
-    <div className="pt-32 md:pt-40">
+    <div className="section-gradient pt-32 md:pt-40">
       {/* Header */}
       <section className="container-edge pb-16 md:pb-24">
         <div className="eyebrow mb-6 flex items-center gap-3">
@@ -27,7 +27,7 @@ export default function ServicesPageClient({ services = [] }) {
           <span>Services</span>
         </div>
         <h1 className="heading-xl text-[var(--color-fg)] max-w-[18ch]">
-          What we <span className="italic text-[var(--color-fg-muted)]">build</span>.
+          What we <span className="italic text-heading-accent">build</span>.
         </h1>
         <p className="mt-10 max-w-[56ch] text-lg text-[var(--color-fg-muted)] leading-relaxed">
           Five practice areas, one senior team. We work as an embedded partner —
@@ -54,7 +54,7 @@ export default function ServicesPageClient({ services = [] }) {
         </div>
       </section>
 
-      <section className="container-edge pb-32 md:pb-48 relative">
+      <section className="section-gradient-alt container-edge pb-32 md:pb-48 relative">
         <HoverImagePreviewLayer active={hoverImage} onClear={clearHoverImage} />
         {visible.map((s, i) => {
           const img = s.image_url || s.thumbnail_url;

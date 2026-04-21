@@ -75,15 +75,15 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="pt-32 md:pt-40">
-      <section className="container-edge pb-16 md:pb-24">
+    <div className="section-gradient pt-32 md:pt-40">
+      <section className="section-gradient-alt container-edge pb-16 md:pb-24">
         <div className="eyebrow mb-6 flex items-center gap-3">
           <span className="w-8 h-px bg-[var(--color-fg-muted)]" />
           <span>Contact</span>
         </div>
         <h1 className="heading-xl text-[var(--color-fg)] max-w-[18ch]">
           Tell us what you want to{" "}
-          <span className="italic text-[var(--color-fg-muted)]">build</span>.
+          <span className="italic text-heading-accent">build</span>.
         </h1>
         <p className="mt-10 max-w-[56ch] text-lg text-[var(--color-fg-muted)] leading-relaxed">
           We reply within one business day — usually faster. Share what you
@@ -91,7 +91,7 @@ export default function ContactPage() {
         </p>
       </section>
 
-      <section className="container-edge pb-32 md:pb-48 border-t border-[var(--color-line)] pt-16 md:pt-24">
+      <section className="section-gradient-warm container-edge pb-32 md:pb-48 border-t border-[var(--color-line)] pt-16 md:pt-24">
         <div className="grid grid-cols-12 gap-10 md:gap-16">
           {/* Form */}
           <div className="col-span-12 md:col-span-8">
