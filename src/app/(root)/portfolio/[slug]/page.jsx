@@ -7,6 +7,115 @@ import {
 
 export const revalidate = 3600;
 
+function toExternalHref(url) {
+  const raw = String(url || "").trim();
+  if (!raw) return null;
+  if (/^(https?:)?\/\//i.test(raw)) return raw.startsWith("//") ? `https:${raw}` : raw;
+  if (/^[a-z]+:/i.test(raw)) return raw;
+  return `https://${raw}`;
+}
+
+function normalizeUrlList(value) {
+  if (!Array.isArray(value)) return [];
+  return [...new Set(value.map((v) => String(v || "").trim()).filter(Boolean))];
+}
+
+function isDirectVideoUrl(url) {
+  return /\.(mp4|webm|mov|m4v|ogg)(\?|#|$)/i.test(url);
+}
+
+function isLikelyImageUrl(url) {
+  if (!url) return false;
+  if (isDirectVideoUrl(url)) return false;
+  return /\.(jpg|jpeg|png|webp|gif|avif|svg)(\?|#|$)/i.test(url) || /^https?:\/\//i.test(url);
+}
+
+function getYouTubeEmbedUrl(url) {
+  try {
+    const u = new URL(toExternalHref(url));
+    const host = u.hostname.toLowerCase();
+    if (host.includes("youtu.be")) {
+      const id = u.pathname.split("/").filter(Boolean)[0];
+      return id ? `https://www.youtube.com/embed/${id}` : null;
+    }
+    if (host.includes("youtube.com")) {
+      if (u.pathname.startsWith("/shorts/")) {
+        const id = u.pathname.split("/")[2];
+        return id ? `https://www.youtube.com/embed/${id}` : null;
+      }
+      const id = u.searchParams.get("v");
+      return id ? `https://www.youtube.com/embed/${id}` : null;
+    }
+  } catch {}
+  return null;
+}
+
+function getVimeoEmbedUrl(url) {
+  try {
+    const u = new URL(toExternalHref(url));
+    if (!u.hostname.toLowerCase().includes("vimeo.com")) return null;
+    const id = u.pathname.split("/").filter(Boolean).find((p) => /^\d+$/.test(p));
+    return id ? `https://player.vimeo.com/video/${id}` : null;
+  } catch {}
+  return null;
+}
+
+function toMediaItems(project) {
+  const items = [];
+  const gallery = normalizeUrlList(project.gallery_urls);
+  const videos = normalizeUrlList(project.video_urls);
+
+  for (const url of gallery) {
+    const href = toExternalHref(url);
+    if (!href) continue;
+    if (isLikelyImageUrl(href)) {
+      items.push({ kind: "image", url: href });
+      continue;
+    }
+    if (isDirectVideoUrl(href)) {
+      items.push({ kind: "video-file", url: href });
+      continue;
+    }
+    const yt = getYouTubeEmbedUrl(href);
+    if (yt) {
+      items.push({ kind: "video-embed", url: yt, sourceUrl: href });
+      continue;
+    }
+    const vimeo = getVimeoEmbedUrl(href);
+    if (vimeo) {
+      items.push({ kind: "video-embed", url: vimeo, sourceUrl: href });
+      continue;
+    }
+    items.push({ kind: "link", url: href });
+  }
+
+  for (const url of videos) {
+    const href = toExternalHref(url);
+    if (!href) continue;
+    if (isDirectVideoUrl(href)) {
+      items.push({ kind: "video-file", url: href });
+      continue;
+    }
+    const yt = getYouTubeEmbedUrl(href);
+    if (yt) {
+      items.push({ kind: "video-embed", url: yt, sourceUrl: href });
+      continue;
+    }
+    const vimeo = getVimeoEmbedUrl(href);
+    if (vimeo) {
+      items.push({ kind: "video-embed", url: vimeo, sourceUrl: href });
+      continue;
+    }
+    if (isLikelyImageUrl(href)) {
+      items.push({ kind: "image", url: href });
+      continue;
+    }
+    items.push({ kind: "link", url: href });
+  }
+
+  return items;
+}
+
 export async function generateStaticParams() {
   const projects = await getAllProjects();
   return projects.map((p) => ({ slug: p.slug }));
@@ -30,6 +139,8 @@ export default async function ProjectPage({ params }) {
   const allProjects = await getAllProjects();
   const currentIdx = allProjects.findIndex((p) => p.slug === slug);
   const next = allProjects[(currentIdx + 1) % allProjects.length];
+  const externalHref = toExternalHref(project.live_url);
+  const mediaItems = toMediaItems(project);
 
   return (
     <article className="pt-32 md:pt-40">
@@ -46,10 +157,10 @@ export default async function ProjectPage({ params }) {
         <p className="mt-10 max-w-[56ch] text-lg text-[var(--color-fg-muted)] leading-relaxed">
           {project.description}
         </p>
-        {project.live_url ? (
+        {externalHref ? (
           <p className="mt-8">
             <a
-              href={project.live_url}
+              href={externalHref}
               target="_blank"
               rel="noopener noreferrer"
               data-cursor="hover"
@@ -77,19 +188,75 @@ export default async function ProjectPage({ params }) {
         </div>
       </section>
 
-      {Array.isArray(project.video_urls) && project.video_urls.length > 0 && (
+      {mediaItems.length > 0 && (
         <section className="container-edge pb-16 md:pb-24 space-y-6">
-          <div className="eyebrow text-[var(--color-fg-muted)]">Video</div>
-          <div className="flex flex-col gap-8">
-            {project.video_urls.map((url) => (
-              <div
-                key={url}
-                className="relative aspect-video w-full overflow-hidden border border-[var(--color-line)] bg-black rounded-xl"
-              >
-                {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-                <video src={url} className="absolute inset-0 w-full h-full object-contain" controls playsInline />
-              </div>
-            ))}
+          <div className="eyebrow text-[var(--color-fg-muted)]">Project media</div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
+            {mediaItems.map((item, idx) => {
+              const key = `${item.kind}-${item.url}-${idx}`;
+              if (item.kind === "image") {
+                return (
+                  <div
+                    key={key}
+                    className="relative aspect-video w-full overflow-hidden border border-[var(--color-line)] rounded-xl bg-[var(--color-bg-soft)]"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={item.url}
+                      alt={`${project.title} media ${idx + 1}`}
+                      className="absolute inset-0 h-full w-full object-cover"
+                      loading="lazy"
+                    />
+                  </div>
+                );
+              }
+              if (item.kind === "video-file") {
+                return (
+                  <div
+                    key={key}
+                    className="relative aspect-video w-full overflow-hidden border border-[var(--color-line)] bg-black rounded-xl"
+                  >
+                    {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+                    <video
+                      src={item.url}
+                      className="absolute inset-0 w-full h-full object-contain"
+                      controls
+                      playsInline
+                      preload="metadata"
+                    />
+                  </div>
+                );
+              }
+              if (item.kind === "video-embed") {
+                return (
+                  <div
+                    key={key}
+                    className="relative aspect-video w-full overflow-hidden border border-[var(--color-line)] bg-black rounded-xl"
+                  >
+                    <iframe
+                      src={item.url}
+                      title={`${project.title} video ${idx + 1}`}
+                      className="absolute inset-0 h-full w-full"
+                      loading="lazy"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowFullScreen
+                    />
+                  </div>
+                );
+              }
+              return (
+                <a
+                  key={key}
+                  href={item.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="relative aspect-video w-full rounded-xl border border-[var(--color-line)] bg-[var(--color-bg-elev)] p-5 flex flex-col justify-between hover:border-[var(--color-accent)] transition-colors"
+                >
+                  <span className="eyebrow text-[var(--color-fg-muted)]">External media</span>
+                  <span className="text-sm text-[var(--color-fg)] break-all">{item.url}</span>
+                </a>
+              );
+            })}
           </div>
         </section>
       )}

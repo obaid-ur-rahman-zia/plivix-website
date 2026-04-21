@@ -6,6 +6,14 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { prefersReducedMotion } from "@/lib/scroll/useScrollTriggerSync";
 
+function toExternalHref(url) {
+  const raw = String(url || "").trim();
+  if (!raw) return null;
+  if (/^(https?:)?\/\//i.test(raw)) return raw.startsWith("//") ? `https:${raw}` : raw;
+  if (/^[a-z]+:/i.test(raw)) return raw;
+  return `https://${raw}`;
+}
+
 /**
  * ProjectsShowcase — horizontal scroll gallery.
  *
@@ -146,11 +154,13 @@ export default function ProjectsShowcase({ projects = [] }) {
             ref={trackRef}
             className="absolute inset-y-0 left-0 flex items-start pt-2 gap-6 lg:gap-8 pl-[clamp(1.25rem,4vw,3rem)] pr-[25vw] will-change-transform"
           >
-            {projects.map((p, i) => (
-              <div
-                key={p.slug}
-                className="group relative flex-none w-[80vw] sm:w-[60vw] md:w-[48vw] lg:w-[38vw] xl:w-[32vw] max-w-[640px] h-[86%] max-h-full min-h-0 flex flex-col"
-              >
+            {projects.map((p, i) => {
+              const externalHref = toExternalHref(p.live_url);
+              return (
+                <div
+                  key={p.slug}
+                  className="group relative flex-none w-[80vw] sm:w-[60vw] md:w-[48vw] lg:w-[38vw] xl:w-[32vw] max-w-[640px] h-[86%] max-h-full min-h-0 flex flex-col"
+                >
                 <div className="flex items-baseline justify-between eyebrow text-[var(--color-fg-muted)] mb-4">
                   <span>{String(i + 1).padStart(2, "0")}</span>
                   <span>
@@ -179,9 +189,9 @@ export default function ProjectsShowcase({ projects = [] }) {
                     </div>
                   </div>
                 </Link>
-                {p.live_url ? (
+                {externalHref ? (
                   <a
-                    href={p.live_url}
+                    href={externalHref}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="mt-3 text-xs font-medium text-[var(--color-accent)] hover:underline self-start"
@@ -189,8 +199,9 @@ export default function ProjectsShowcase({ projects = [] }) {
                     Project link ↗
                   </a>
                 ) : null}
-              </div>
-            ))}
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
@@ -218,8 +229,10 @@ export default function ProjectsShowcase({ projects = [] }) {
 
         <div className="overflow-x-auto snap-x snap-mandatory -mx-[clamp(1.25rem,4vw,3rem)] px-[clamp(1.25rem,4vw,3rem)] pb-10">
           <div className="flex gap-4 w-max">
-            {projects.map((p, i) => (
-              <div key={p.slug} className="group snap-start flex-none w-[78vw] flex flex-col">
+            {projects.map((p, i) => {
+              const externalHref = toExternalHref(p.live_url);
+              return (
+                <div key={p.slug} className="group snap-start flex-none w-[78vw] flex flex-col">
                 <div className="flex items-baseline justify-between eyebrow text-[var(--color-fg-muted)] mb-3">
                   <span>{String(i + 1).padStart(2, "0")}</span>
                   <span>
@@ -237,9 +250,9 @@ export default function ProjectsShowcase({ projects = [] }) {
                     {p.description}
                   </p>
                 </Link>
-                {p.live_url ? (
+                {externalHref ? (
                   <a
-                    href={p.live_url}
+                    href={externalHref}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="mt-2 text-xs font-medium text-[var(--color-accent)] hover:underline"
@@ -247,8 +260,9 @@ export default function ProjectsShowcase({ projects = [] }) {
                     Project link ↗
                   </a>
                 ) : null}
-              </div>
-            ))}
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
