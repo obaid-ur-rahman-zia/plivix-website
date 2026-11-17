@@ -8,7 +8,7 @@ import ProjectsShowcase from "@/components/home/ProjectsShowcase";
 import StatsStrip from "@/components/home/StatsStrip";
 import PricingSection from "@/components/home/PricingSection";
 import Testimonials from "@/components/home/Testimonials";
-import GlanceSection from "@/components/home/GlanceSection";
+import ProductsSection from "@/components/home/ProductsSection";
 import FaqSection from "@/components/home/FaqSection";
 import CTASection from "@/components/home/CTASection";
 import {
@@ -48,6 +48,7 @@ export default async function HomePage() {
     <>
       <Hero />
       <Marquee />
+      <ProductsSection />
       <SolutionsSection />
       <ServicesPinScroll services={services} />
       <TextRevealSection />
@@ -56,7 +57,6 @@ export default async function HomePage() {
       <StatsStrip stats={stats} />
       <PricingSection plans={localizeRows(plans, PRICING_FIELDS, locale)} />
       <Testimonials testimonials={localizeRows(testimonials, TESTIMONIAL_FIELDS, locale)} />
-      <GlanceSection />
       <FaqSection faqs={localizeRows(faqs, FAQ_FIELDS, locale)} />
       <CTASection />
     </>

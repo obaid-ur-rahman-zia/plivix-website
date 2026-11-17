@@ -8,6 +8,12 @@
 - Mobile apps for iOS and Android.
 - AI automation, machine learning and data analytics.
 
+## Products
+- Plivix ERP: stock, sales, purchase and accounts in one system (4–8 weeks to go live).
+- Plivix POS: billing for shops and multi-outlet retail, works offline (1–2 weeks).
+- Plivix HR: attendance, leave and payroll with payslips (2–4 weeks).
+- Plivix Store: online shop sharing stock with the ERP (2–4 weeks).
+
 ## Pricing (starting prices, USD, written fixed-price quotes)
 - Company website: from $1,500
 - Web or mobile app: from $6,000
@@ -23,6 +29,7 @@ Discovery call, written scope and fixed quote, build in two-week sprints with wo
 - Website: https://www.plivix-tech.com
 
 ## Pages
+- https://www.plivix-tech.com/products : Ready-made products (ERP, POS, HR, Store)
 - https://www.plivix-tech.com/solutions : ERP and business software
 - https://www.plivix-tech.com/services : all services
 - https://www.plivix-tech.com/pricing : starting prices

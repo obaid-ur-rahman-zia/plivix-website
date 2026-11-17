@@ -5,7 +5,7 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { prefersReducedMotion } from "@/lib/scroll/useScrollTriggerSync";
 import { revealOnScroll } from "@/lib/scroll/reveal";
-import IconChip from "@/components/IconChip";
+import { StepGlyph } from "@/components/illustrations/LineArt";
 import IsoBlocks from "@/components/IsoBlocks";
 import { useI18n } from "@/components/I18nProvider";
 
@@ -53,11 +53,13 @@ export default function ProcessSection() {
             <div className="col-span-12 md:col-span-2 eyebrow text-[var(--color-fg-muted)] md:pt-2">{s.w}</div>
             <span aria-hidden className="absolute left-[-5px] md:left-[calc(16.666%-5px)] top-2.5 h-[11px] w-[11px] rounded-full bg-[var(--color-accent)] ring-4 ring-[var(--color-bg)]" />
             <div className="col-span-12 md:col-span-9 md:col-start-4">
-              <div className="flex items-baseline gap-4">
-                <IconChip index={i} className="self-center" />
-                <h3 className="font-display text-2xl md:text-4xl text-[var(--color-fg)]">{s.t}</h3>
+              <div className="flex items-center gap-5 md:gap-7">
+                <StepGlyph index={i} className="w-11 h-11 md:w-14 md:h-14 shrink-0 text-[var(--color-fg)]" />
+                <div>
+                  <h3 className="font-display text-2xl md:text-4xl text-[var(--color-fg)]">{s.t}</h3>
+                  <p className="mt-1.5 text-[var(--color-fg-muted)]">{s.d}</p>
+                </div>
               </div>
-              <p className="mt-3 max-w-[56ch] text-[var(--color-fg-muted)] leading-relaxed">{s.d}</p>
             </div>
           </li>
         ))}

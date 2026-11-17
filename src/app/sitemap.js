@@ -6,6 +6,7 @@ export default async function sitemap() {
   const now = new Date();
   const pages = [
     ["", 1.0],
+    ["/products", 0.9],
     ["/solutions", 0.9],
     ["/services", 0.9],
     ["/pricing", 0.9],

@@ -10,6 +10,7 @@ import { revealOnScroll } from "@/lib/scroll/reveal";
 import { AsciiStackSkeleton } from "@/components/AsciiSkeleton";
 import { useI18n } from "@/components/I18nProvider";
 import IconChip from "@/components/IconChip";
+import { IndustryGlyph, LocalGlyph } from "@/components/illustrations/LineArt";
 import { useTheme } from "@/components/theme/ThemeProvider";
 
 const ErpCanvas = dynamic(() => import("./ErpCanvas"), { ssr: false, loading: () => <AsciiStackSkeleton /> });
@@ -128,32 +129,29 @@ export default function SolutionsSection({ full = false }) {
         <div className="col-span-12 md:col-span-4">
           <h3 className="font-display text-2xl md:text-3xl text-[var(--color-fg)]">{t("solutions.industriesTitle")}</h3>
         </div>
-        <ul data-erp-ind-list className="col-span-12 md:col-span-8 grid sm:grid-cols-2 gap-px bg-[var(--color-line)] border border-[var(--color-line)]">
-          {industries.map((x) => (
-            <li key={x.t} data-erp-ind data-tilt className="bg-[var(--color-bg)] p-5 md:p-6 flex gap-4">
-              <IconChip index={industries.indexOf(x)} />
-              <div>
-                <div className="font-display text-lg text-[var(--color-fg)]">{x.t}</div>
-                <p className="mt-1 text-sm text-[var(--color-fg-muted)] leading-relaxed">{x.d}</p>
-              </div>
+        <ul data-erp-ind-list className="col-span-12 md:col-span-8 grid grid-cols-2 sm:grid-cols-3 gap-px bg-[var(--color-line)] border border-[var(--color-line)]">
+          {industries.map((x, i) => (
+            <li key={x.t} data-erp-ind data-tilt title={x.d} className="group bg-[var(--color-bg)] p-5 md:p-7 flex flex-col gap-5">
+              <IndustryGlyph index={i} className="w-10 h-10 md:w-12 md:h-12 text-[var(--color-fg)] transition-transform duration-500 group-hover:-translate-y-1" />
+              <div className="font-display text-base md:text-lg leading-snug text-[var(--color-fg)]">{x.t}</div>
             </li>
           ))}
         </ul>
       </div>
 
       <div className="mt-16 md:mt-24 grid grid-cols-12 gap-8 items-end border-t border-[var(--color-line)] pt-10">
-        <div className="col-span-12 md:col-span-7">
-          <h3 className="font-display text-xl md:text-2xl text-[var(--color-fg)] mb-4">{t("solutions.localTitle")}</h3>
-          <ul className="grid gap-2 text-sm md:text-base text-[var(--color-fg-muted)]">
-            {t("solutions.local").map((l) => (
-              <li key={l} className="flex gap-3">
-                <span aria-hidden className="mt-2.5 h-px w-3 bg-[var(--color-accent)] shrink-0" />
+        <div className="col-span-12 md:col-span-8">
+          <h3 className="font-display text-xl md:text-2xl text-[var(--color-fg)] mb-6">{t("solutions.localTitle")}</h3>
+          <ul className="grid grid-cols-2 sm:grid-cols-4 gap-6 text-sm text-[var(--color-fg-muted)]">
+            {t("solutions.local").map((l, i) => (
+              <li key={l} className="flex flex-col gap-3">
+                <LocalGlyph index={i} className="w-10 h-10 text-[var(--color-fg)]" />
                 {l}
               </li>
             ))}
           </ul>
         </div>
-        <div className="col-span-12 md:col-span-5 flex flex-col gap-3 md:items-end">
+        <div className="col-span-12 md:col-span-4 flex flex-col gap-3 md:items-end">
           <Link
             href="/contact?service=erp"
             data-cursor="hover"

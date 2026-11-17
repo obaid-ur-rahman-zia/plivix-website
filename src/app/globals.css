@@ -793,3 +793,16 @@ html[data-seen] [data-loader] { display: none !important; }
 @media (prefers-reduced-motion: reduce) {
   .ascii-skel .ascii-shimmer { animation: none; }
 }
+
+/* Product wireframes: small hover motion */
+.wf-bar { transform-box: fill-box; transform-origin: bottom; transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+.group:hover .wf-bar { transform: scaleY(1.12); }
+.wf-pop { transform-box: fill-box; transform-origin: center; transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+.group:hover .wf-pop { transform: scale(1.06); }
+.wf-line { stroke-dasharray: 300; stroke-dashoffset: 0; }
+.group:hover .wf-line { animation: wf-draw 1.2s ease; }
+@keyframes wf-draw { from { stroke-dashoffset: 300; } to { stroke-dashoffset: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .group:hover .wf-bar, .group:hover .wf-pop { transform: none; }
+  .group:hover .wf-line { animation: none; }
+}

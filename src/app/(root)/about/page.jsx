@@ -1,4 +1,5 @@
 import AboutPage from "@/components/AboutPage";
+import GlanceSection from "@/components/home/GlanceSection";
 import { getTeam, getStats } from "@/lib/supabase/queries";
 
 export const revalidate = 3600;
@@ -18,5 +19,5 @@ export const metadata = {
 
 export default async function About() {
   const [team, stats] = await Promise.all([getTeam(), getStats()]);
-  return <AboutPage team={team} stats={stats} />;
+  return <AboutPage team={team} stats={stats} beforeCta={<GlanceSection />} />;
 }

@@ -46,7 +46,9 @@ export default function ContactPage() {
     const svc = q.get("service");
     const idx = svc === "erp" || plan === "erp-suite" || plan === "enterprise" ? 0 : plan === "website" ? 1 : plan === "app" ? 3 : -1;
     if (idx >= 0) setFormData((d) => (d.service ? d : { ...d, service: SERVICE_OPTIONS[idx] }));
-    if (plan) setFormData((d) => (d.message ? d : { ...d, message: `[Plan: ${plan}]
+    const product = q.get("product");
+    const tag = plan ? `[Plan: ${plan}]` : product ? `[Demo: Plivix ${product.toUpperCase()}]` : "";
+    if (tag) setFormData((d) => (d.message ? d : { ...d, message: `${tag}
 ` }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

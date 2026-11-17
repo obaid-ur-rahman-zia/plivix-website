@@ -16,6 +16,7 @@ export default function Footer() {
       title: t("footer.sitemap"),
       links: [
         { label: t("nav.home"), href: "/" },
+        { label: t("nav.products"), href: "/products" },
         { label: t("nav.work"), href: "/portfolio" },
         { label: t("nav.services"), href: "/services" },
         { label: t("nav.solutions"), href: "/solutions" },

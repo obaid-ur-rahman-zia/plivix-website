@@ -9,15 +9,16 @@ import { prefersReducedMotion } from "@/lib/scroll/useScrollTriggerSync";
 import { useI18n } from "../I18nProvider";
 
 const menuLinks = [
-  { path: "/", key: "home", index: "01" },
-  { path: "/portfolio", key: "work", index: "02" },
-  { path: "/services", key: "services", index: "03" },
-  { path: "/solutions", key: "solutions", index: "04" },
-  { path: "/pricing", key: "pricing", index: "05" },
-  { path: "/about", key: "about", index: "06" },
-  { path: "/internships", key: "careers", index: "07" },
-  { path: "/contact", key: "contact", index: "08" },
-];
+  { path: "/", key: "home" },
+  { path: "/products", key: "products" },
+  { path: "/portfolio", key: "work" },
+  { path: "/services", key: "services" },
+  { path: "/solutions", key: "solutions" },
+  { path: "/pricing", key: "pricing" },
+  { path: "/about", key: "about" },
+  { path: "/internships", key: "careers" },
+  { path: "/contact", key: "contact" },
+].map((l, i) => ({ ...l, index: String(i + 1).padStart(2, "0") }));
 
 export default function Menu({ open, onClose }) {
   const { t } = useI18n();

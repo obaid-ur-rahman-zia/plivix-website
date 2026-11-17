@@ -6,7 +6,7 @@ import { HoverImagePreviewLayer, useHoverImagePreview } from "@/components/Hover
 import { revealOnScroll } from "@/lib/scroll/reveal";
 import { useI18n } from "@/components/I18nProvider";
 
-export default function AboutPage({ team = [], stats = [] }) {
+export default function AboutPage({ team = [], stats = [], beforeCta }) {
   const rootRef = useRef(null);
   const { t } = useI18n();
   const values = t("pages.about.values");
@@ -167,6 +167,7 @@ export default function AboutPage({ team = [], stats = [] }) {
       )}
 
       {/* CTA */}
+      {beforeCta}
       <section className="container-edge border-t border-[var(--color-line)] py-24 md:py-32 flex flex-col md:flex-row md:items-end md:justify-between gap-8">
         <h2 className="heading-md text-[var(--color-fg)] max-w-[22ch]">
           {t("pages.about.ctaTitle")}

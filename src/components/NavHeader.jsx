@@ -49,6 +49,7 @@ export default function NavHeader() {
 
           <nav className="hidden lg:flex items-center gap-7 text-sm font-medium text-[var(--color-fg-muted)]">
             {[
+              ["/products", "products"],
               ["/portfolio", "work"],
               ["/services", "services"],
               ["/solutions", "solutions"],
