@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { verifyAdminRequest } from "@/lib/admin-auth";
 import { getSupabaseAdmin, getSupabaseAdminConfigError } from "@/lib/supabase/adminServer";
 import { ENTITIES } from "@/lib/admin/entityFieldConfig";
@@ -47,6 +47,7 @@ export async function POST(request, context) {
     }
   }
 
+  revalidateTag("cms");
   revalidatePath("/", "layout");
   revalidatePath("/about");
   revalidatePath("/services");

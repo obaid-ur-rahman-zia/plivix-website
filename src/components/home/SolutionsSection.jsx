@@ -6,11 +6,13 @@ import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { prefersReducedMotion } from "@/lib/scroll/useScrollTriggerSync";
+import { revealOnScroll } from "@/lib/scroll/reveal";
+import { AsciiStackSkeleton } from "@/components/AsciiSkeleton";
 import { useI18n } from "@/components/I18nProvider";
 import IconChip from "@/components/IconChip";
 import { useTheme } from "@/components/theme/ThemeProvider";
 
-const ErpCanvas = dynamic(() => import("./ErpCanvas"), { ssr: false });
+const ErpCanvas = dynamic(() => import("./ErpCanvas"), { ssr: false, loading: () => <AsciiStackSkeleton /> });
 
 /** ERP overview: the module list drives the 3D slab stack beside it. */
 export default function SolutionsSection({ full = false }) {
@@ -55,27 +57,15 @@ export default function SolutionsSection({ full = false }) {
         scrub: true,
         onUpdate: (self) => (progressRef.current = self.progress),
       });
-      if (reduce) {
-        progressRef.current = 1;
-        return;
-      }
-      gsap.from("[data-erp-head] > *", {
-        y: 30, opacity: 0, duration: 0.9, stagger: 0.1, ease: "expo.out",
-        immediateRender: false,
-        scrollTrigger: { trigger: "[data-erp-head]", start: "top 85%", once: true },
-      });
-      gsap.from("[data-erp-mod]", {
-        y: 22, opacity: 0, duration: 0.6, stagger: 0.05, ease: "power3.out",
-        immediateRender: false,
-        scrollTrigger: { trigger: "[data-erp-list]", start: "top 85%", once: true },
-      });
-      gsap.from("[data-erp-ind]", {
-        y: 20, opacity: 0, duration: 0.6, stagger: 0.06, ease: "power3.out",
-        immediateRender: false,
-        scrollTrigger: { trigger: "[data-erp-ind-list]", start: "top 88%", once: true },
-      });
+      if (reduce) progressRef.current = 1;
     }, rootRef);
-    return () => ctx.revert();
+    const undo = revealOnScroll(
+      rootRef.current.querySelectorAll("[data-erp-head] > *, [data-erp-mod], [data-erp-ind]")
+    );
+    return () => {
+      undo();
+      ctx.revert();
+    };
   }, [modules]);
 
   const Head = full ? "h1" : "h2";
@@ -95,7 +85,11 @@ export default function SolutionsSection({ full = false }) {
 
       <div data-erp-stage className="mt-12 md:mt-20 grid grid-cols-12 gap-8 md:gap-10 items-start">
         <div ref={stageRef} className="col-span-12 md:col-span-6 md:sticky md:top-28 order-1 md:order-2 relative h-[300px] sm:h-[380px] md:h-[min(70vh,560px)]">
-          {near && <ErpCanvas count={modules.length} activeIdx={active} progressRef={progressRef} theme={theme} isMobile={isMobile} />}
+          {near ? (
+            <ErpCanvas count={modules.length} activeIdx={active} progressRef={progressRef} theme={theme} isMobile={isMobile} />
+          ) : (
+            <AsciiStackSkeleton />
+          )}
           <span className="absolute bottom-0 right-0 eyebrow text-[var(--color-fg-subtle)]">
             {t("solutions.canvasHint")}
           </span>

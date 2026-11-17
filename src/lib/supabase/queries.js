@@ -31,7 +31,12 @@ function getServerClient() {
   try {
     return createClient(url, key, {
       auth: { persistSession: false },
-      global: { fetch: (...args) => fetch(...args) },
+      // Cache CMS reads for 5 minutes in Next's data cache so every page view
+      // does not hit Supabase. CMS saves call revalidateTag("cms").
+      global: {
+        fetch: (input, init = {}) =>
+          fetch(input, { ...init, next: { revalidate: 300, tags: ["cms"] } }),
+      },
     });
   } catch {
     return null;

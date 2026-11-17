@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { prefersReducedMotion } from "@/lib/scroll/useScrollTriggerSync";
+import { revealOnScroll } from "@/lib/scroll/reveal";
 import IconChip from "@/components/IconChip";
 import IsoBlocks from "@/components/IsoBlocks";
 import { useI18n } from "@/components/I18nProvider";
@@ -25,14 +26,12 @@ export default function ProcessSection() {
           scrollTrigger: { trigger: "[data-steps]", start: "top 70%", end: "bottom 60%", scrub: true },
         }
       );
-      gsap.utils.toArray("[data-step]").forEach((el) => {
-        gsap.from(el, {
-          y: 40, opacity: 0, duration: 0.8, ease: "expo.out", immediateRender: false,
-          scrollTrigger: { trigger: el, start: "top 88%", once: true },
-        });
-      });
     }, ref);
-    return () => ctx.revert();
+    const undo = revealOnScroll(ref.current.querySelectorAll("[data-step]"), { y: 36 });
+    return () => {
+      undo();
+      ctx.revert();
+    };
   }, [steps]);
 
   return (

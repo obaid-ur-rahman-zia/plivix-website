@@ -154,7 +154,7 @@ const en = {
     avail: "Taking new projects",
     rights: "Plivix Technologies. All rights reserved.",
     tagline: "ERP, web, mobile and AI software for companies in Bangladesh and worldwide.",
-    reg: "Company registration in Bangladesh in progress.",
+    reg: "Registered in Bangladesh.",
     links: {
       erp: "ERP systems",
       web: "Web platforms",
@@ -447,7 +447,7 @@ const bn = {
     avail: "নতুন প্রজেক্ট নিচ্ছি",
     rights: "প্লিভিক্স টেকনোলজিস। সর্বস্বত্ব সংরক্ষিত।",
     tagline: "বাংলাদেশ ও বিশ্বজুড়ে প্রতিষ্ঠানের জন্য ERP, ওয়েব, মোবাইল ও AI সফটওয়্যার।",
-    reg: "বাংলাদেশে কোম্পানি নিবন্ধন প্রক্রিয়াধীন।",
+    reg: "বাংলাদেশে নিবন্ধিত কোম্পানি।",
     links: {
       erp: "ERP সিস্টেম",
       web: "ওয়েব প্ল্যাটফর্ম",

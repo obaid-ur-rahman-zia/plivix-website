@@ -2,9 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef } from "react";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { prefersReducedMotion } from "@/lib/scroll/useScrollTriggerSync";
+import { revealOnScroll } from "@/lib/scroll/reveal";
 import { useI18n } from "@/components/I18nProvider";
 import { USD_TO_BDT } from "@/lib/i18n/config";
 
@@ -21,15 +19,8 @@ export default function PricingGrid({ plans = [] }) {
   const ref = useRef(null);
 
   useEffect(() => {
-    if (!ref.current || prefersReducedMotion()) return;
-    gsap.registerPlugin(ScrollTrigger);
-    const ctx = gsap.context(() => {
-      gsap.from("[data-plan]", {
-        y: 40, opacity: 0, duration: 0.8, stagger: 0.1, ease: "expo.out", immediateRender: false,
-        scrollTrigger: { trigger: ref.current, start: "top 85%", once: true },
-      });
-    }, ref);
-    return () => ctx.revert();
+    if (!ref.current) return;
+    return revealOnScroll(ref.current.querySelectorAll("[data-plan]"), { y: 36, stagger: 0.08 });
   }, [plans]);
 
   return (

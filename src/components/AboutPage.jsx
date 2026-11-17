@@ -2,10 +2,8 @@
 
 import { useEffect, useRef } from "react";
 import Link from "next/link";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { HoverImagePreviewLayer, useHoverImagePreview } from "@/components/HoverImagePreview";
-import { prefersReducedMotion } from "@/lib/scroll/useScrollTriggerSync";
+import { revealOnScroll } from "@/lib/scroll/reveal";
 import { useI18n } from "@/components/I18nProvider";
 
 export default function AboutPage({ team = [], stats = [] }) {
@@ -16,23 +14,8 @@ export default function AboutPage({ team = [], stats = [] }) {
   const { active: hoverImage, bind: bindHoverImage, clear: clearHoverImage } = useHoverImagePreview();
 
   useEffect(() => {
-    if (!rootRef.current || prefersReducedMotion()) return;
-    const ctx = gsap.context(() => {
-      gsap.utils.toArray("[data-reveal]").forEach((el) => {
-        gsap.fromTo(
-          el,
-          { opacity: 0, y: 30 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 1,
-            ease: "expo.out",
-            scrollTrigger: { trigger: el, start: "top 85%", once: true },
-          }
-        );
-      });
-    }, rootRef);
-    return () => ctx.revert();
+    if (!rootRef.current) return;
+    return revealOnScroll(rootRef.current.querySelectorAll("[data-reveal]"));
   }, [values]);
 
   return (
