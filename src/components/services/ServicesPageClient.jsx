@@ -2,19 +2,23 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import { useI18n } from "@/components/I18nProvider";
 import { HoverImagePreviewLayer, useHoverImagePreview } from "@/components/HoverImagePreview";
 
+const ALL = "__all__";
+
 export default function ServicesPageClient({ services = [] }) {
+  const { t } = useI18n();
   const { active: hoverImage, bind: bindHoverImage, clear: clearHoverImage } = useHoverImagePreview();
   const categories = useMemo(() => {
     const set = new Set(services.map((s) => s.category));
-    return ["All", ...Array.from(set)];
+    return [ALL, ...Array.from(set)];
   }, [services]);
 
-  const [active, setActive] = useState("All");
+  const [active, setActive] = useState(ALL);
 
   const visible = useMemo(() => {
-    if (active === "All") return services;
+    if (active === ALL) return services;
     return services.filter((s) => s.category === active);
   }, [services, active]);
 
@@ -24,15 +28,13 @@ export default function ServicesPageClient({ services = [] }) {
       <section className="container-edge pb-16 md:pb-24">
         <div className="eyebrow mb-6 flex items-center gap-3">
           <span className="w-8 h-px bg-[var(--color-fg-muted)]" />
-          <span>Services</span>
+          <span>{t("pages.services.eyebrow")}</span>
         </div>
         <h1 className="heading-xl text-[var(--color-fg)] max-w-[18ch]">
-          What we <span className="italic text-heading-accent">build</span>.
+          {t("pages.services.h1a")} <span className="italic text-heading-accent">{t("pages.services.h1b")}</span>.
         </h1>
         <p className="mt-10 max-w-[56ch] text-lg text-[var(--color-fg-muted)] leading-relaxed">
-          Five practice areas, one senior team. We work as an embedded partner —
-          discovery, design, delivery, and operate — with evals, observability
-          and accessibility built in from the first commit.
+          {t("pages.services.lead")}
         </p>
 
         <div className="mt-12 flex flex-wrap gap-2">
@@ -48,7 +50,7 @@ export default function ServicesPageClient({ services = [] }) {
                   : "border-[var(--color-line-strong)] text-[var(--color-fg)] hover:border-[var(--color-accent)] hover:text-[var(--color-accent)]"
               }`}
             >
-              {c}
+              {c === ALL ? t("pages.services.all") : c}
             </button>
           ))}
         </div>
@@ -102,11 +104,11 @@ export default function ServicesPageClient({ services = [] }) {
               </div>
               <div className="pt-4">
                 <Link
-                  href="/contact"
+                  href={`/contact?service=${encodeURIComponent(s.slug)}`}
                   data-cursor="hover"
                   className="eyebrow underline-grow text-[var(--color-fg)]"
                 >
-                  Discuss {s.title.toLowerCase()} →
+                  {t("pages.services.discuss")} →
                 </Link>
               </div>
             </div>

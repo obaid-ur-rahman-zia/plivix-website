@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { useLoading } from "../LoadingContext";
+import { useI18n } from "../I18nProvider";
 import Logo from "../Logo";
 
 /**
@@ -13,6 +14,7 @@ import Logo from "../Logo";
  * - On completion: clip-path curtain expo-out reveal, then unmounts.
  */
 export default function Loader({ onComplete }) {
+  const { t } = useI18n();
   const { progress, isComplete } = useLoading();
   const rootRef = useRef(null);
   const counterRef = useRef(null);
@@ -78,13 +80,13 @@ export default function Loader({ onComplete }) {
         className="flex items-center justify-between px-6 md:px-10 pt-6 md:pt-8"
       >
         <div className="flex items-center gap-3">
-          <Logo variant="mark" width={36} height={36} priority className="h-9 w-9 object-contain" />
+          <Logo variant="mark" width={26} height={49} priority className="h-11 w-auto object-contain" />
           <span className="eyebrow text-[var(--color-fg-muted)]">
             Plivix / Technologies
           </span>
         </div>
         <div className="eyebrow hidden md:block text-[var(--color-fg-muted)]">
-          Loading session
+          {t("loader.loading")}
         </div>
       </div>
 

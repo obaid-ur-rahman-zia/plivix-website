@@ -4,25 +4,15 @@ import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { useLenis } from "lenis/react";
 import { prefersReducedMotion } from "@/lib/scroll/useScrollTriggerSync";
+import { useI18n } from "@/components/I18nProvider";
 
-const VERBS = [
-  "Build",
-  "Ship",
-  "Automate",
-  "Train",
-  "Deploy",
-  "Scale",
-  "Instrument",
-  "Forecast",
-];
-
-function Segment() {
+function Segment({ words }) {
   return (
     <div className="flex items-center gap-12 pr-12">
-      {VERBS.map((v) => (
+      {words.map((v) => (
         <span
           key={v}
-          className="font-display italic text-[var(--color-fg)] text-[clamp(2.5rem,7vw,7rem)] leading-none tracking-[-0.03em] flex items-center gap-12"
+          className="font-display text-[var(--color-fg)] text-[clamp(2rem,6vw,5.5rem)] leading-none tracking-[-0.03em] flex items-center gap-12"
         >
           {v}
           <span
@@ -38,6 +28,8 @@ function Segment() {
 }
 
 export default function Marquee() {
+  const { t } = useI18n();
+  const words = t("marquee");
   const trackRef = useRef(null);
   const tweenRef = useRef(null);
   const lenis = useLenis();
@@ -67,7 +59,7 @@ export default function Marquee() {
     return () => {
       tweenRef.current?.kill();
     };
-  }, []);
+  }, [words]);
 
   // Velocity-reactive speed — boost when user is scrolling.
   useEffect(() => {
@@ -90,9 +82,9 @@ export default function Marquee() {
       className="section-gradient relative py-12 md:py-20 overflow-hidden border-y border-[var(--color-line)]"
     >
       <div ref={trackRef} className="flex whitespace-nowrap will-change-transform">
-        <Segment />
-        <Segment />
-        <Segment />
+        <Segment words={words} />
+        <Segment words={words} />
+        <Segment words={words} />
       </div>
     </section>
   );

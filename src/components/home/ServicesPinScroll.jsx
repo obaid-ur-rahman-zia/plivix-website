@@ -6,6 +6,7 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { HoverImagePreviewLayer, useHoverImagePreview } from "@/components/HoverImagePreview";
 import { prefersReducedMotion } from "@/lib/scroll/useScrollTriggerSync";
+import { useI18n } from "@/components/I18nProvider";
 
 /**
  * Rich pinned services showcase.
@@ -23,6 +24,7 @@ import { prefersReducedMotion } from "@/lib/scroll/useScrollTriggerSync";
  * shorter laptops).
  */
 export default function ServicesPinScroll({ services = [] }) {
+  const { t } = useI18n();
   const sectionRef = useRef(null);
   const pinRef = useRef(null);
   const detailRef = useRef(null);
@@ -137,10 +139,10 @@ export default function ServicesPinScroll({ services = [] }) {
               <div>
                 <div className="eyebrow mb-4 flex items-center gap-3">
                   <span className="w-8 h-px bg-[var(--color-fg-muted)]" />
-                  <span>What we do</span>
+                  <span>{t("services.eyebrow")}</span>
                 </div>
                 <h2 className="font-display text-[clamp(2rem,4.4vw,3.75rem)] leading-[0.95] tracking-[-0.03em] text-[var(--color-fg)]">
-                  Services.
+                  {t("services.title")}
                 </h2>
               </div>
               <Link
@@ -148,7 +150,7 @@ export default function ServicesPinScroll({ services = [] }) {
                 className="eyebrow underline-grow text-[var(--color-fg)] shrink-0 mt-1"
                 data-cursor="hover"
               >
-                View all services →
+                {t("services.all")} →
               </Link>
             </div>
             <ul className="flex flex-col min-h-0 overflow-hidden">
@@ -258,6 +260,8 @@ export default function ServicesPinScroll({ services = [] }) {
                   <img
                     src={active.image_url || active.thumbnail_url}
                     alt=""
+                    loading="lazy"
+                    decoding="async"
                     className="absolute inset-0 w-full h-full object-cover"
                   />
                 )}
@@ -296,7 +300,7 @@ export default function ServicesPinScroll({ services = [] }) {
                 data-cursor="hover"
                 className="eyebrow underline-grow text-[var(--color-fg)]"
               >
-                Learn more →
+                {t("pages.services.learnMore")} →
               </Link>
             </div>
           </div>
@@ -310,16 +314,16 @@ export default function ServicesPinScroll({ services = [] }) {
           <div>
             <div className="eyebrow mb-4 flex items-center gap-3">
               <span className="w-6 h-px bg-[var(--color-fg-muted)]" />
-              <span>What we do</span>
+              <span>{t("services.eyebrow")}</span>
             </div>
-            <h2 className="heading-lg text-[var(--color-fg)]">Services.</h2>
+            <h2 className="heading-lg text-[var(--color-fg)]">{t("services.title")}</h2>
           </div>
           <Link
             href="/services"
             className="eyebrow underline-grow text-[var(--color-fg)] self-end shrink-0"
             data-cursor="hover"
           >
-            View all services →
+            {t("services.all")} →
           </Link>
         </div>
         {services.map((s, i) => {

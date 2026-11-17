@@ -111,7 +111,7 @@ export default function SiteSettingsPanel() {
               value={contact_email}
               onChange={(e) => setContactEmail(e.target.value)}
               className={base}
-              placeholder="hello@example.com"
+              placeholder="contact@plivix-tech.com"
             />
           </div>
           <div className="space-y-1 md:col-span-2">

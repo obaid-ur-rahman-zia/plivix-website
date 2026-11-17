@@ -5,6 +5,7 @@ import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { prefersReducedMotion } from "@/lib/scroll/useScrollTriggerSync";
+import { useI18n } from "@/components/I18nProvider";
 
 function toExternalHref(url) {
   const raw = String(url || "").trim();
@@ -27,6 +28,7 @@ function toExternalHref(url) {
  *   - Native horizontal snap scroll (touch-friendly).
  */
 export default function ProjectsShowcase({ projects = [] }) {
+  const { t } = useI18n();
   const sectionRef = useRef(null);
   const pinRef = useRef(null);
   const trackRef = useRef(null);
@@ -125,23 +127,23 @@ export default function ProjectsShowcase({ projects = [] }) {
           <div>
             <div className="eyebrow mb-4 flex items-center gap-3">
               <span className="w-8 h-px bg-[var(--color-fg-muted)]" />
-              <span>Selected work</span>
+              <span>{t("projects.eyebrow")}</span>
             </div>
             <h2 className="font-display text-[clamp(2.5rem,6vw,5.5rem)] leading-[0.95] tracking-[-0.03em] text-[var(--color-fg)]">
-              Recent <span className="italic text-[var(--color-fg-muted)]">projects</span>.
+              <span className="text-[var(--color-fg-muted)]">{t("projects.title")}</span>.
             </h2>
           </div>
           <div className="flex items-center gap-5">
             <div className="eyebrow text-[var(--color-fg-muted)] hidden lg:flex items-center gap-3">
               <span className="w-8 h-px bg-[var(--color-fg-muted)]" />
-              <span>Scroll →</span>
+              <span>{t("projects.scroll")}</span>
             </div>
             <Link
               href="/portfolio"
               className="eyebrow underline-grow text-[var(--color-fg)]"
               data-cursor="hover"
             >
-              View all projects →
+              {t("common.viewAll")} →
             </Link>
           </div>
         </div>
@@ -196,7 +198,7 @@ export default function ProjectsShowcase({ projects = [] }) {
                     rel="noopener noreferrer"
                     className="mt-3 text-xs font-medium text-[var(--color-accent)] hover:underline self-start"
                   >
-                    Project link ↗
+                    {t("pages.project.link")} ↗
                   </a>
                 ) : null}
                 </div>
@@ -212,10 +214,10 @@ export default function ProjectsShowcase({ projects = [] }) {
           <div>
             <div className="eyebrow mb-3 flex items-center gap-3">
               <span className="w-6 h-px bg-[var(--color-fg-muted)]" />
-              <span>Selected work</span>
+              <span>{t("projects.eyebrow")}</span>
             </div>
             <h2 className="heading-lg text-[var(--color-fg)]">
-              Recent <span className="italic text-[var(--color-fg-muted)]">projects</span>.
+              <span className="text-[var(--color-fg-muted)]">{t("projects.title")}</span>.
             </h2>
           </div>
           <Link
@@ -223,7 +225,7 @@ export default function ProjectsShowcase({ projects = [] }) {
             className="eyebrow underline-grow text-[var(--color-fg)] self-end"
             data-cursor="hover"
           >
-            View all projects →
+            {t("common.viewAll")} →
           </Link>
         </div>
 
@@ -257,7 +259,7 @@ export default function ProjectsShowcase({ projects = [] }) {
                     rel="noopener noreferrer"
                     className="mt-2 text-xs font-medium text-[var(--color-accent)] hover:underline"
                   >
-                    Project link ↗
+                    {t("pages.project.link")} ↗
                   </a>
                 ) : null}
                 </div>
@@ -280,6 +282,7 @@ function ProjectCover({ project }) {
           src={src}
           alt={project.title}
           loading="lazy"
+          decoding="async"
           className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1.2s] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.04]"
         />
         <div className="absolute inset-0 bg-[var(--color-bg)] opacity-20 transition-opacity duration-700 group-hover:opacity-0" />

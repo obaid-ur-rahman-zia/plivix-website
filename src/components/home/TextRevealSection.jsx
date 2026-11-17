@@ -4,13 +4,13 @@ import { useEffect, useRef, useMemo } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { prefersReducedMotion } from "@/lib/scroll/useScrollTriggerSync";
-
-const PARAGRAPH =
-  "We are a small, senior team that ships production systems — web, mobile, AI and data platforms. We care about performance, accessibility and the craft of shipping software that actually runs. No templates, no AI slop, no throwaway demos.";
+import { useI18n } from "@/components/I18nProvider";
 
 export default function TextRevealSection() {
   const sectionRef = useRef(null);
-  const words = useMemo(() => PARAGRAPH.split(/\s+/), []);
+  const { t } = useI18n();
+  const text = t("manifesto.text");
+  const words = useMemo(() => text.split(/\s+/), [text]);
 
   useEffect(() => {
     if (!sectionRef.current) return;
@@ -35,7 +35,7 @@ export default function TextRevealSection() {
       );
     }, sectionRef);
     return () => ctx.revert();
-  }, []);
+  }, [words]);
 
   return (
     <section
@@ -44,7 +44,7 @@ export default function TextRevealSection() {
     >
       <div className="grid grid-cols-12 gap-6">
         <div className="col-span-12 md:col-span-2 eyebrow text-[var(--color-fg-muted)]">
-          /01 manifesto
+          {t("manifesto.label")}
         </div>
         <p className="col-span-12 md:col-span-10 font-display text-[clamp(1.75rem,4vw,3.5rem)] leading-[1.15] tracking-[-0.025em] text-[var(--color-fg-subtle)]">
           {words.map((w, i) => (

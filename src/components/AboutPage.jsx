@@ -6,35 +6,13 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { HoverImagePreviewLayer, useHoverImagePreview } from "@/components/HoverImagePreview";
 import { prefersReducedMotion } from "@/lib/scroll/useScrollTriggerSync";
-
-const values = [
-  {
-    title: "Craft over volume",
-    body: "We take fewer engagements, deeper. Every commit goes through review, every deploy through evals.",
-  },
-  {
-    title: "Shipped, not demoed",
-    body: "Production systems, measured by the outcomes they produce — not the slides they appear in.",
-  },
-  {
-    title: "Measurable quality",
-    body: "Lighthouse ≥ 95, WCAG 2.2 AA, typed end-to-end, observable in production.",
-  },
-  {
-    title: "AI with guardrails",
-    body: "Every AI workflow we build has evaluations, tracing and cost controls from day one.",
-  },
-];
-
-const timeline = [
-  { year: "2022", event: "Founded. First production engagement shipped in 8 weeks." },
-  { year: "2023", event: "Team grows to five senior engineers across web, mobile and ML." },
-  { year: "2024", event: "AI automation practice launches; 9 production workflows deployed." },
-  { year: "2025", event: "Data science practice launches; reach 42+ systems shipped to date." },
-];
+import { useI18n } from "@/components/I18nProvider";
 
 export default function AboutPage({ team = [], stats = [] }) {
   const rootRef = useRef(null);
+  const { t } = useI18n();
+  const values = t("pages.about.values");
+  const timeline = t("pages.about.timeline");
   const { active: hoverImage, bind: bindHoverImage, clear: clearHoverImage } = useHoverImagePreview();
 
   useEffect(() => {
@@ -55,7 +33,7 @@ export default function AboutPage({ team = [], stats = [] }) {
       });
     }, rootRef);
     return () => ctx.revert();
-  }, []);
+  }, [values]);
 
   return (
     <div ref={rootRef} className="section-gradient pt-32 md:pt-40">
@@ -63,19 +41,17 @@ export default function AboutPage({ team = [], stats = [] }) {
       <section className="container-edge pb-24 md:pb-32">
         <div className="eyebrow mb-6 flex items-center gap-3">
           <span className="w-8 h-px bg-[var(--color-fg-muted)]" />
-          <span>About</span>
+          <span>{t("pages.about.eyebrow")}</span>
         </div>
         <h1 className="heading-xl text-[var(--color-fg)] max-w-[18ch]">
-          A small team,{" "}
-          <span className="italic text-heading-accent">deep</span> craft.
+          {t("pages.about.h1a")}{" "}
+          <span className="italic text-heading-accent">{t("pages.about.h1b")}</span> {t("pages.about.h1c")}
         </h1>
         <p
           data-reveal
           className="mt-10 max-w-[62ch] text-lg text-[var(--color-fg-muted)] leading-relaxed"
         >
-          Plivix Technologies is a senior engineering collective. We build and
-          operate production systems across web, mobile, AI automation, machine
-          learning and data science — as an embedded partner, not a vendor.
+          {t("pages.about.lead")}
         </p>
       </section>
 
@@ -106,10 +82,10 @@ export default function AboutPage({ team = [], stats = [] }) {
       <section className="section-gradient-warm container-edge border-t border-[var(--color-line)] py-24 md:py-32">
         <div className="grid grid-cols-12 gap-6 md:gap-10">
           <div className="col-span-12 md:col-span-4">
-            <div className="eyebrow text-[var(--color-fg-muted)] mb-6">How we work</div>
+            <div className="eyebrow text-[var(--color-fg-muted)] mb-6">{t("pages.about.howEyebrow")}</div>
             <h2 className="heading-md text-[var(--color-fg)]">
-              Values{" "}
-              <span className="italic text-heading-accent">we live by</span>.
+              {t("pages.about.valuesA")}{" "}
+              <span className="italic text-heading-accent">{t("pages.about.valuesB")}</span>.
             </h2>
           </div>
           <div className="col-span-12 md:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-14">
@@ -136,19 +112,19 @@ export default function AboutPage({ team = [], stats = [] }) {
 
       {/* Timeline */}
       <section className="container-edge border-t border-[var(--color-line)] py-24 md:py-32">
-        <div className="eyebrow mb-10 text-[var(--color-fg-muted)]">Timeline</div>
+        <div className="eyebrow mb-10 text-[var(--color-fg-muted)]">{t("pages.about.timelineEyebrow")}</div>
         <ol className="flex flex-col">
-          {timeline.map((t) => (
+          {timeline.map((row) => (
             <li
-              key={t.year}
+              key={row.year}
               data-reveal
               className="grid grid-cols-12 gap-6 border-t border-[var(--color-line)] py-8"
             >
               <span className="col-span-3 md:col-span-2 font-mono text-[var(--color-accent)]">
-                {t.year}
+                {row.year}
               </span>
               <span className="col-span-9 md:col-span-10 font-display text-xl md:text-2xl leading-[1.2] tracking-[-0.02em] text-[var(--color-fg)]">
-                {t.event}
+                {row.event}
               </span>
             </li>
           ))}
@@ -161,10 +137,10 @@ export default function AboutPage({ team = [], stats = [] }) {
         <section className="container-edge border-t border-[var(--color-line)] py-24 md:py-32">
           <div className="grid grid-cols-12 gap-6 md:gap-10">
             <div className="col-span-12 md:col-span-4">
-              <div className="eyebrow text-[var(--color-fg-muted)] mb-6">Team</div>
+              <div className="eyebrow text-[var(--color-fg-muted)] mb-6">{t("pages.about.teamEyebrow")}</div>
               <h2 className="heading-md text-[var(--color-fg)]">
-                People behind{" "}
-                <span className="italic text-heading-accent">the work</span>.
+                {t("pages.about.teamA")}{" "}
+                <span className="italic text-heading-accent">{t("pages.about.teamB")}</span>.
               </h2>
             </div>
             <div className="col-span-12 md:col-span-8 flex flex-col relative">
@@ -210,14 +186,14 @@ export default function AboutPage({ team = [], stats = [] }) {
       {/* CTA */}
       <section className="container-edge border-t border-[var(--color-line)] py-24 md:py-32 flex flex-col md:flex-row md:items-end md:justify-between gap-8">
         <h2 className="heading-md text-[var(--color-fg)] max-w-[22ch]">
-          Want to work with us?
+          {t("pages.about.ctaTitle")}
         </h2>
         <Link
           href="/contact"
           data-cursor="hover"
           className="inline-flex items-center gap-3 bg-[var(--color-accent)] text-[var(--color-on-accent)] px-6 py-4 rounded-full hover:bg-[var(--color-accent-hover)] transition-colors"
         >
-          Start a project
+          {t("common.startProject")}
           <span aria-hidden>→</span>
         </Link>
       </section>

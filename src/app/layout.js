@@ -1,5 +1,5 @@
 import "./globals.css";
-import { Inter, Space_Grotesk, JetBrains_Mono } from "next/font/google";
+import { Inter, Space_Grotesk, JetBrains_Mono, Noto_Sans_Bengali } from "next/font/google";
 import LoadingMonitor from "../components/LoadingMonitor";
 import { LoadingProvider } from "../components/LoadingContext";
 import SmoothScroll from "../components/SmoothScroll";
@@ -7,8 +7,11 @@ import GsapBootstrap from "../components/GsapBootstrap";
 import { ThemeProvider } from "../components/theme/ThemeProvider";
 import ThemeScript from "../components/theme/ThemeScript";
 import { SiteSettingsProvider } from "../components/SiteSettingsContext";
+import { I18nProvider } from "../components/I18nProvider";
+import { getLocale } from "@/lib/i18n/server";
 import { getSiteSettings } from "@/lib/supabase/queries";
 import { sameAsFromSocials } from "@/lib/siteSocials";
+import Script from "next/script";
 
 // Body — clean, neutral, high legibility.
 const inter = Inter({
@@ -35,12 +38,34 @@ const jetbrains = JetBrains_Mono({
   weight: ["400", "500", "600"],
 });
 
+// Bengali — loaded for every visitor but only applied when <html lang="bn">.
+const notoBengali = Noto_Sans_Bengali({
+  subsets: ["bengali", "latin"],
+  variable: "--font-bengali",
+  display: "swap",
+  weight: ["400", "500", "600", "700"],
+  preload: false,
+});
+
+export const viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: dark)", color: "#0a0a0a" },
+    { media: "(prefers-color-scheme: light)", color: "#f5f4ef" },
+  ],
+  width: "device-width",
+  initialScale: 1,
+};
+
 export const metadata = {
   metadataBase: new URL("https://www.plivix-tech.com"),
-  title: "Plivix Technologies — Engineering intelligent systems",
+  title: "Plivix Technologies — ERP, web, mobile & AI software",
   description:
-    "Plivix Technologies builds production-grade web, mobile, AI and data platforms. Full-stack engineering, AI automation, machine learning and data science for modern teams.",
+    "Plivix Technologies builds ERP systems, web platforms, mobile apps and AI automation for companies in Bangladesh and worldwide. Fixed-price proposals and clear software pricing.",
   keywords: [
+    "ERP software Bangladesh",
+    "ERP development",
+    "software company Bangladesh",
+    "custom software pricing",
     "Plivix",
     "Plivix Technologies",
     "Full-Stack Development",
@@ -52,11 +77,13 @@ export const metadata = {
     "AI Agency",
   ],
   openGraph: {
-    title: "Plivix Technologies — Engineering intelligent systems",
+    title: "Plivix Technologies — ERP, web, mobile & AI software",
     description:
-      "Full-stack engineering, AI automation, machine learning and data science for modern teams.",
+      "ERP systems, web platforms, mobile apps and AI automation. Fixed-price proposals.",
     url: "https://www.plivix-tech.com",
     type: "website",
+    locale: "en_US",
+    alternateLocale: ["bn_BD"],
     siteName: "Plivix Technologies",
     // Image file must match width/height exactly (WhatsApp/Facebook reject mismatches).
     images: [
@@ -71,23 +98,42 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Plivix Technologies — Engineering intelligent systems",
+    title: "Plivix Technologies — ERP, web, mobile & AI software",
     description:
-      "Full-stack engineering, AI automation, machine learning and data science for modern teams.",
+      "ERP systems, web platforms, mobile apps and AI automation. Fixed-price proposals.",
     images: ["/images/og-image/og.png"],
   },
-  robots: "index, follow",
-  icons: { icon: "/favicon.ico" },
+  applicationName: "Plivix Technologies",
+  manifest: "/manifest.webmanifest",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1 },
+  },
+  ...(process.env.NEXT_PUBLIC_GSC_VERIFICATION
+    ? { verification: { google: process.env.NEXT_PUBLIC_GSC_VERIFICATION } }
+    : {}),
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon-48.png", sizes: "48x48", type: "image/png" },
+      { url: "/icon-96.png", sizes: "96x96", type: "image/png" },
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+    ],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180" }],
+  },
+  alternates: { canonical: "/" },
 };
 
 export default async function RootLayout({ children }) {
   const siteSettings = await getSiteSettings();
   const sameAs = sameAsFromSocials(siteSettings.socials);
+  const locale = await getLocale();
 
   return (
     <html
-      lang="en"
-      className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrains.variable}`}
+      lang={locale}
+      className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrains.variable} ${notoBengali.variable}`}
       suppressHydrationWarning
     >
       <head>
@@ -97,13 +143,34 @@ export default async function RootLayout({ children }) {
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               "@context": "https://schema.org",
-              "@type": "Organization",
+              "@type": ["Organization", "ProfessionalService"],
+              "@id": "https://www.plivix-tech.com/#org",
+              priceRange: "$$",
+              knowsAbout: ["ERP software", "Web development", "Mobile app development", "AI automation", "Data analytics"],
+              knowsLanguage: ["en", "bn"],
               name: "Plivix Technologies",
               url: "https://www.plivix-tech.com",
-              logo: "/images/logo/logo-full.png",
+              logo: "https://www.plivix-tech.com/icon-512.png",
+              email: siteSettings.contact_email,
+              areaServed: "Worldwide",
+              address: { "@type": "PostalAddress", addressCountry: "BD" },
               ...(sameAs.length > 0 ? { sameAs } : {}),
               description:
-                "Plivix Technologies builds production-grade web, mobile, AI and data platforms.",
+                "Plivix Technologies builds ERP systems, web platforms, mobile apps and AI automation.",
+            }),
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              "@id": "https://www.plivix-tech.com/#website",
+              url: "https://www.plivix-tech.com",
+              name: "Plivix Technologies",
+              inLanguage: ["en", "bn"],
+              publisher: { "@id": "https://www.plivix-tech.com/#org" },
             }),
           }}
         />
@@ -116,6 +183,7 @@ export default async function RootLayout({ children }) {
           Skip to content
         </a>
         <SiteSettingsProvider value={siteSettings}>
+          <I18nProvider locale={locale}>
           <ThemeProvider>
             <LoadingProvider>
               <GsapBootstrap />
@@ -127,7 +195,14 @@ export default async function RootLayout({ children }) {
               </SmoothScroll>
             </LoadingProvider>
           </ThemeProvider>
+          </I18nProvider>
         </SiteSettingsProvider>
+        {process.env.NEXT_PUBLIC_GA_ID ? (
+          <>
+            <Script src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`} strategy="lazyOnload" />
+            <Script id="ga" strategy="lazyOnload">{`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','${process.env.NEXT_PUBLIC_GA_ID}');`}</Script>
+          </>
+        ) : null}
       </body>
     </html>
   );

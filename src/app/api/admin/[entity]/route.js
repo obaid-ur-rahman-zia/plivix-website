@@ -10,6 +10,8 @@ const TABLES = new Set([
   "testimonials",
   "stats",
   "internships",
+  "pricing_plans",
+  "faqs",
 ]);
 
 export async function GET(request, context) {
@@ -66,8 +68,7 @@ export async function PATCH(request, context) {
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
-  revalidatePath("/");
-  revalidatePath("/about");
+  revalidatePath("/", "layout");
   return NextResponse.json({ data });
 }
 
@@ -99,8 +100,7 @@ export async function POST(request, context) {
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
-  revalidatePath("/");
-  revalidatePath("/about");
+  revalidatePath("/", "layout");
   return NextResponse.json({ data });
 }
 
@@ -129,7 +129,6 @@ export async function DELETE(request, context) {
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
-  revalidatePath("/");
-  revalidatePath("/about");
+  revalidatePath("/", "layout");
   return NextResponse.json({ ok: true });
 }

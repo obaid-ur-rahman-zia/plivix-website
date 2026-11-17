@@ -1,9 +1,0 @@
-# *
-User-agent: *
-Allow: /
-
-# Host
-Host: https://www.plivix-tech.com
-
-# Sitemaps
-Sitemap: https://www.plivix-tech.com/sitemap.xml

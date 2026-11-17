@@ -6,16 +6,10 @@ import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { prefersReducedMotion } from "@/lib/scroll/useScrollTriggerSync";
 import { useTheme } from "@/components/theme/ThemeProvider";
+import { useI18n } from "@/components/I18nProvider";
 
 const HeroCanvas = dynamic(() => import("./HeroCanvas"), { ssr: false });
 
-const CAPABILITIES = [
-  "Full-Stack Web",
-  "App Development",
-  "AI Automation",
-  "Machine Learning",
-  "Data Science",
-];
 
 /**
  * Hero — a single-viewport section (100svh).
@@ -32,6 +26,8 @@ const CAPABILITIES = [
  * without any sticky/pinning machinery.
  */
 export default function Hero() {
+  const { t } = useI18n();
+  const CAPABILITIES = t("hero.caps");
   const sectionRef = useRef(null);
   const contentRef = useRef(null);
   const progressRef = useRef(0);
@@ -142,8 +138,8 @@ export default function Hero() {
           {/* Availability pill */}
           <div data-fade className="flex shrink-0">
             <span className="inline-flex items-center gap-2.5 rounded-full border border-[var(--color-line-strong)] bg-[var(--color-bg-elev)]/60 backdrop-blur-md px-3.5 py-1.5 font-mono text-[11px] tracking-[0.04em] uppercase text-[var(--color-fg-muted)]">
-              <span className="hidden sm:inline">Available for new engagements · 2026</span>
-              <span className="sm:hidden">Available · 2026</span>
+              <span className="hidden sm:inline">{t("hero.pill")}</span>
+              <span className="sm:hidden">{t("hero.pillShort")}</span>
             </span>
           </div>
 
@@ -151,14 +147,14 @@ export default function Hero() {
           <div className="flex flex-col justify-start lg:justify-center gap-4 sm:gap-5 md:gap-6 py-2 sm:py-4 md:py-6 min-h-0 max-lg:flex-none lg:flex-1">
             <h1 className="font-display font-semibold text-[var(--color-fg)] tracking-[-0.035em] text-[clamp(2rem,min(5.6vw,9.5svh),4.75rem)] flex flex-col gap-[0.12em] shrink-0 [line-height:1.02]">
               <span className="block overflow-hidden py-[0.04em] [line-height:inherit]">
-                <span className="hero-line block [line-height:inherit]">Engineering</span>
+                <span className="hero-line block [line-height:inherit]">{t("hero.line1")}</span>
               </span>
               <span className="block overflow-hidden py-[0.04em] [line-height:inherit]">
                 <span className="hero-line block [line-height:inherit]">
                   <span className="inline font-bold rounded-none bg-[var(--color-accent)] px-[0.12em] py-[0.04em] text-[var(--color-on-accent)]">
-                    intelligent
+                    {t("hero.hl")}
                   </span>{" "}
-                  <span className="text-[var(--color-fg)]">systems.</span>
+                  <span className="text-[var(--color-fg)]">{t("hero.line2")}</span>
                 </span>
               </span>
             </h1>
@@ -167,9 +163,7 @@ export default function Hero() {
               data-fade
               className="max-w-[52ch] shrink-0 text-sm md:text-base lg:text-lg leading-relaxed text-[var(--color-fg-muted)]"
             >
-              Plivix Technologies is a boutique studio building production-grade
-              web, mobile, AI and data platforms for modern teams — design-led,
-              performance-obsessed, and backed by senior engineering.
+              {t("hero.sub")}
             </p>
 
             <div
@@ -179,9 +173,9 @@ export default function Hero() {
               <Link
                 href="/contact"
                 data-cursor="hover"
-                className="group inline-flex w-full sm:w-auto justify-center items-center gap-2.5 rounded-full bg-[var(--color-accent)] text-[var(--color-on-accent)] px-5 md:px-6 py-3 md:py-3.5 text-sm font-medium transition-all hover:bg-[var(--color-accent-hover)] hover:shadow-[0_8px_30px_color-mix(in_oklab,var(--color-accent)_45%,transparent)]"
+                data-magnetic className="group inline-flex w-full sm:w-auto justify-center items-center gap-2.5 rounded-full bg-[var(--color-accent)] text-[var(--color-on-accent)] px-5 md:px-6 py-3 md:py-3.5 text-sm font-medium transition-all hover:bg-[var(--color-accent-hover)] hover:shadow-[0_8px_30px_color-mix(in_oklab,var(--color-accent)_45%,transparent)]"
               >
-                Start a project
+                {t("common.getQuote")}
                 <span aria-hidden className="transition-transform duration-300 group-hover:translate-x-1">→</span>
               </Link>
               <Link
@@ -189,7 +183,7 @@ export default function Hero() {
                 data-cursor="hover"
                 className="group inline-flex w-full sm:w-auto justify-center items-center gap-2.5 rounded-full border border-[var(--color-line-strong)] text-[var(--color-fg)] px-5 md:px-6 py-3 md:py-3.5 text-sm font-medium hover:border-[var(--color-fg)] transition-colors"
               >
-                See our work
+                {t("common.seeWork")}
                 <span aria-hidden className="transition-transform duration-300 group-hover:translate-x-1">→</span>
               </Link>
             </div>
@@ -201,7 +195,7 @@ export default function Hero() {
             className="flex flex-wrap items-center gap-2 md:gap-2.5 shrink-0 max-lg:mt-1 max-lg:border-t max-lg:border-[var(--color-line)] max-lg:pt-5 sm:pt-4 max-lg:relative max-lg:z-[1]"
           >
             <span className="font-mono text-[11px] uppercase tracking-[0.08em] text-[var(--color-fg-muted)] mr-1 md:mr-3">
-              / Services
+              {t("hero.capsLabel")}
             </span>
             {CAPABILITIES.map((c, i) => (
               <span
@@ -227,11 +221,11 @@ export default function Hero() {
                 Plivix Technologies
               </span>
               <span className="font-mono text-[11px] text-[var(--color-fg-muted)] hidden sm:block">
-                Sargodha → Global · est. 2024
+                {t("hero.metaLeft")}
               </span>
             </div>
             <div className="flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.08em] text-[var(--color-fg-muted)]">
-              <span className="hidden sm:inline">Scroll to explore</span>
+              <span className="hidden sm:inline">{t("common.scroll")}</span>
               <span
                 aria-hidden
                 className="relative inline-block w-10 h-px bg-[var(--color-fg-muted)] overflow-hidden"

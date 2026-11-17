@@ -13,7 +13,7 @@ create table if not exists public.site_settings (
 insert into public.site_settings (id, contact_email, address, location_tagline, hours, socials)
 values (
   1,
-  'hello@plivix-tech.com',
+  'contact@plivix-tech.com',
   null,
   'Remote · Global',
   'Mon – Sat · 8:00 – 17:00 UTC+5',

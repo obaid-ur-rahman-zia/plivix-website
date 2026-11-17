@@ -5,6 +5,8 @@ import { useEffect, useRef, useState } from "react";
 import Menu from "./Menu/Menu";
 import Logo from "./Logo";
 import ThemeToggle from "./theme/ThemeToggle";
+import LanguageSwitcher from "./LanguageSwitcher";
+import { useI18n } from "./I18nProvider";
 
 /**
  * NavHeader — theme-aware, always. At the top of the page the nav is
@@ -13,6 +15,7 @@ import ThemeToggle from "./theme/ThemeToggle";
  * Text colours always follow the site theme — no forced-dark override.
  */
 export default function NavHeader() {
+  const { t } = useI18n();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const rootRef = useRef(null);
@@ -39,62 +42,46 @@ export default function NavHeader() {
             href="/"
             data-cursor="hover"
             aria-label="Plivix home"
-            className="flex items-center gap-2 text-[var(--color-fg)]"
+            className="flex items-center gap-2.5 text-[var(--color-fg)]"
           >
-            <Logo
-              variant="full"
-              width={100}
-              height={100}
-              className="h-10 w-auto object-contain"
-            />
+            <Logo variant="full" width={94} height={40} priority alt="Plivix Technologies" className="h-8 md:h-9 w-auto object-contain" />
           </Link>
 
-          <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-[var(--color-fg-muted)]">
-            <Link
-              href="/portfolio"
-              className="underline-grow text-[var(--color-fg)] transition-opacity hover:opacity-80"
-              data-cursor="hover"
-            >
-              Work
-            </Link>
-            <Link
-              href="/services"
-              className="underline-grow text-[var(--color-fg)] transition-opacity hover:opacity-80"
-              data-cursor="hover"
-            >
-              Services
-            </Link>
-            <Link
-              href="/about"
-              className="underline-grow text-[var(--color-fg)] transition-opacity hover:opacity-80"
-              data-cursor="hover"
-            >
-              About
-            </Link>
-            <Link
-              href="/internships"
-              className="underline-grow text-[var(--color-fg)] transition-opacity hover:opacity-80"
-              data-cursor="hover"
-            >
-              Careers
-            </Link>
+          <nav className="hidden lg:flex items-center gap-7 text-sm font-medium text-[var(--color-fg-muted)]">
+            {[
+              ["/portfolio", "work"],
+              ["/services", "services"],
+              ["/solutions", "solutions"],
+              ["/pricing", "pricing"],
+              ["/about", "about"],
+            ].map(([href, key]) => (
+              <Link
+                key={href}
+                href={href}
+                className="underline-grow text-[var(--color-fg)] transition-opacity hover:opacity-80"
+                data-cursor="hover"
+              >
+                {t(`nav.${key}`)}
+              </Link>
+            ))}
           </nav>
 
           <div className="flex items-center gap-2 md:gap-3">
+            <LanguageSwitcher />
             <ThemeToggle variant="cycle" />
 
             <Link
               href="/contact"
               data-cursor="hover"
-              className="hidden md:inline-flex items-center gap-2 border border-[var(--color-line-strong)] text-[var(--color-fg)] rounded-full px-4 py-2 text-sm hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] transition-colors"
+              className="hidden lg:inline-flex items-center gap-2 border border-[var(--color-line-strong)] text-[var(--color-fg)] rounded-full px-4 py-2 text-sm hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] transition-colors"
             >
-              Let&apos;s talk
+              {t("nav.talk")}
               <span aria-hidden>→</span>
             </Link>
             <button
               type="button"
               onClick={() => setMenuOpen((v) => !v)}
-              aria-label={menuOpen ? "Close menu" : "Open menu"}
+              aria-label={menuOpen ? t("nav.menuClose") : t("nav.menuOpen")}
               aria-expanded={menuOpen}
               data-cursor="hover"
               className="relative w-10 h-10 flex items-center justify-center border border-[var(--color-line-strong)] rounded-full text-[var(--color-fg)] hover:border-[var(--color-accent)] transition-colors"

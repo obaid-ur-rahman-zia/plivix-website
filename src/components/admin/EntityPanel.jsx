@@ -31,6 +31,17 @@ function sortRowsByOrder(rows) {
   return [...(rows || [])].sort((a, b) => (a.order_index ?? 0) - (b.order_index ?? 0));
 }
 
+function rowThumb(row) {
+  return row.thumbnail_url || row.cover_url || row.image_url || row.avatar_url || null;
+}
+
+function isPublishedField(row) {
+  for (const k of ["published", "active", "is_active"]) {
+    if (k in row) return Boolean(row[k]);
+  }
+  return null;
+}
+
 function SortableEntityRow({ row, rowLabel, onEdit, onDelete }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: row.id,
@@ -58,10 +69,31 @@ function SortableEntityRow({ row, rowLabel, onEdit, onDelete }) {
       >
         <GripVertical className="w-4 h-4" aria-hidden />
       </button>
+      {rowThumb(row) && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={rowThumb(row)}
+          alt=""
+          className="h-10 w-14 shrink-0 rounded-md border border-[var(--color-line)] object-cover"
+        />
+      )}
       <div className="min-w-0 flex-1">
         <p className="font-medium text-[var(--color-fg)] truncate">{rowLabel(row)}</p>
-        <p className="font-mono text-[10px] text-[var(--color-fg-subtle)] truncate">{row.id}</p>
+        <p className="text-[11px] text-[var(--color-fg-subtle)] truncate">
+          {[row.category, row.client, row.company, row.role].filter(Boolean)[0] || ""}
+        </p>
       </div>
+      {isPublishedField(row) !== null && (
+        <span
+          className={`shrink-0 rounded-full border px-2 py-0.5 text-[10px] uppercase tracking-wide ${
+            isPublishedField(row)
+              ? "border-emerald-500/40 text-emerald-400"
+              : "border-[var(--color-line-strong)] text-[var(--color-fg-subtle)]"
+          }`}
+        >
+          {isPublishedField(row) ? "Live" : "Draft"}
+        </span>
+      )}
       <div className="flex shrink-0 gap-2">
         <button
           type="button"
@@ -82,7 +114,7 @@ function SortableEntityRow({ row, rowLabel, onEdit, onDelete }) {
   );
 }
 
-export default function EntityPanel({ entity, lastUploadUrl }) {
+export default function EntityPanel({ entity, lastUploadUrl, autoNew = false, onChanged }) {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -92,6 +124,8 @@ export default function EntityPanel({ entity, lastUploadUrl }) {
   const [saving, setSaving] = useState(false);
   const [reordering, setReordering] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
+  const [query, setQuery] = useState("");
+  const [toast, setToast] = useState(null);
 
   const fields = ENTITY_FIELDS[entity] || [];
 
@@ -124,8 +158,20 @@ export default function EntityPanel({ entity, lastUploadUrl }) {
     setMode("list");
     setEditingId(null);
     setFormValues({});
-    load();
+    setQuery("");
+    load().then(() => {
+      if (autoNew) {
+        setFormValues(rowToFormValues(entity, emptyDefaults(entity)));
+        setMode("new");
+      }
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [entity, load]);
+
+  const flash = (msg) => {
+    setToast(msg);
+    window.setTimeout(() => setToast(null), 2500);
+  };
 
   const setField = (key, val) => {
     setFormValues((prev) => ({ ...prev, [key]: val }));
@@ -199,6 +245,8 @@ export default function EntityPanel({ entity, lastUploadUrl }) {
       }
       await load();
       cancelForm();
+      flash(mode === "new" ? "Created" : "Saved");
+      onChanged?.();
     } catch (e) {
       setError(e.message || "Save failed");
     } finally {
@@ -216,6 +264,8 @@ export default function EntityPanel({ entity, lastUploadUrl }) {
     if (!res.ok) throw new Error(j.error || "Delete failed");
     if (editingId === id) cancelForm();
     await load();
+    flash("Deleted");
+    onChanged?.();
   };
 
   const handleDragEnd = async (event) => {
@@ -296,12 +346,34 @@ export default function EntityPanel({ entity, lastUploadUrl }) {
   };
 
   const rowLabel = (row) =>
-    row.title || row.name || row.label || row.slug || row.author || row.id?.slice(0, 8) || "Row";
+    row.title ||
+    row.name ||
+    row.label ||
+    row.question ||
+    row.slug ||
+    row.author ||
+    row.id?.slice(0, 8) ||
+    "Row";
+
+  const q = query.trim().toLowerCase();
+  const filteredRows = q
+    ? rows.filter((r) => `${rowLabel(r)} ${r.slug ?? ""} ${r.category ?? ""}`.toLowerCase().includes(q))
+    : rows;
 
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-sm text-[var(--color-fg-muted)] capitalize">{entity}</p>
+        {mode === "list" ? (
+          <input
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder={`Search ${entity.replace("_", " ")}…`}
+            className="w-full sm:w-72 rounded-lg border border-[var(--color-line)] bg-[var(--color-bg)] px-3 py-2 text-sm text-[var(--color-fg)] outline-none focus:border-[var(--color-accent)]"
+          />
+        ) : (
+          <span />
+        )}
         {mode === "list" && (
           <button
             type="button"
@@ -313,10 +385,17 @@ export default function EntityPanel({ entity, lastUploadUrl }) {
         )}
       </div>
 
+      {toast && (
+        <div className="fixed bottom-5 right-5 z-[90] rounded-lg border border-[var(--color-line-strong)] bg-[var(--color-bg-elev)] px-4 py-2.5 text-sm text-[var(--color-fg)] shadow-lg">
+          {toast}
+        </div>
+      )}
       {loading && <p className="text-[var(--color-fg-muted)]">Loading…</p>}
       {error && (
         <div className="rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-300">
-          {error}
+          {/does not exist|schema cache|relation/i.test(error)
+            ? `${error} — this table or column is missing. Run the latest migration (npm run db:ensure), then reload.`
+            : error}
         </div>
       )}
 
@@ -332,7 +411,7 @@ export default function EntityPanel({ entity, lastUploadUrl }) {
             <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
               <SortableContext items={rows.map((r) => r.id)} strategy={verticalListSortingStrategy}>
                 <ul className="space-y-2">
-                  {rows.map((row) => (
+                  {filteredRows.map((row) => (
                     <SortableEntityRow
                       key={row.id}
                       row={row}

@@ -17,6 +17,8 @@ import { testimonials as localTestimonials } from "@/lib/content/testimonials";
 import { stats as localStats } from "@/lib/content/stats";
 import { internships as localInternships } from "@/lib/content/internships";
 import { defaultSiteSettings } from "@/lib/content/siteSettings";
+import { pricingPlans as localPricing } from "@/lib/content/pricing";
+import { faqs as localFaqs } from "@/lib/content/faqs";
 
 function getServerClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -148,6 +150,14 @@ export async function getTestimonials() {
   return query("testimonials", localTestimonials, { published: true });
 }
 
+export async function getPricingPlans() {
+  return query("pricing_plans", localPricing, { published: true });
+}
+
+export async function getFaqs() {
+  return query("faqs", localFaqs, { published: true });
+}
+
 export async function getStats() {
   const rows = await query("stats", localStats);
   return dedupeStatsRows(rows);
@@ -162,11 +172,16 @@ function mergeSiteSettings(row) {
     ...defaultSiteSettings.socials,
     ...(row?.socials && typeof row.socials === "object" ? row.socials : {}),
   };
-  return {
-    ...defaultSiteSettings,
-    ...row,
-    socials,
-  };
+  const merged = { ...defaultSiteSettings, ...row, socials };
+  // Older rows were saved with the pre-Bangladesh defaults. Treat those as
+  // "unset" so the new defaults (email, bilingual location/hours) apply.
+  // Anything the team has typed into the CMS since then is left alone.
+  if (!merged.contact_email || merged.contact_email.trim().toLowerCase() === "hello@plivix-tech.com") {
+    merged.contact_email = defaultSiteSettings.contact_email;
+  }
+  if (/^remote\s*[·.-]\s*global$/i.test((merged.location_tagline || "").trim())) merged.location_tagline = "";
+  if (/utc\+5/i.test(merged.hours || "")) merged.hours = "";
+  return merged;
 }
 
 /** Public site contact block: email, address, hours, social URLs (footer, menu, contact page). */

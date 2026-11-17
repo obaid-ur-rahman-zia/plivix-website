@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getActiveInternships, getSiteSettings } from "@/lib/supabase/queries";
+import { getT } from "@/lib/i18n/server";
 
 export const revalidate = 3600;
 
@@ -7,34 +8,33 @@ export const metadata = {
   title: "Careers — Plivix Technologies",
   description:
     "Internship and apprenticeship roles at Plivix Technologies across full-stack, AI/ML and data engineering.",
+  alternates: { canonical: "/internships" },
 };
 
 export default async function InternshipsPage() {
-  const [roles, site] = await Promise.all([getActiveInternships(), getSiteSettings()]);
-  const applyEmail = site.contact_email?.trim() || "hello@plivix-tech.com";
+  const [roles, site, { t }] = await Promise.all([getActiveInternships(), getSiteSettings(), getT()]);
+  const applyEmail = site.contact_email?.trim() || "contact@plivix-tech.com";
 
   return (
     <div className="section-gradient pt-32 md:pt-40">
       <section className="section-gradient-alt container-edge pb-20 md:pb-32">
         <div className="eyebrow mb-6 flex items-center gap-3">
           <span className="w-8 h-px bg-[var(--color-fg-muted)]" />
-          <span>Careers</span>
+          <span>{t("pages.careers.eyebrow")}</span>
         </div>
         <h1 className="heading-xl text-[var(--color-fg)] max-w-[18ch]">
-          Learn by{" "}
-          <span className="italic text-heading-accent">shipping</span>.
+          {t("pages.careers.h1a")}{" "}
+          <span className="italic text-heading-accent">{t("pages.careers.h1b")}</span>.
         </h1>
         <p className="mt-10 max-w-[60ch] text-lg text-[var(--color-fg-muted)] leading-relaxed">
-          Our internships are scoped slices of real client engagements. You will
-          write production code, pair with senior engineers, and ship features
-          to users — not tutorial exercises.
+          {t("pages.careers.lead")}
         </p>
       </section>
 
       <section className="section-gradient-warm container-edge pb-32 md:pb-48">
         {roles.length === 0 ? (
           <div className="border-t border-[var(--color-line)] py-24 text-center text-[var(--color-fg-muted)]">
-            No open roles right now. Check back soon.
+            {t("pages.careers.none")}
           </div>
         ) : (
           roles.map((r, i) => (
@@ -65,7 +65,7 @@ export default async function InternshipsPage() {
                     data-cursor="hover"
                     className="underline-grow text-[var(--color-fg)]"
                   >
-                    Apply → {applyEmail}
+                    {t("pages.careers.apply")} → {applyEmail}
                   </Link>
                 </div>
               </div>

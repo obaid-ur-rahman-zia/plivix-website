@@ -1,5 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import JsonLd, { breadcrumbs } from "@/components/JsonLd";
+import { getT } from "@/lib/i18n/server";
+import { localizeRow, PROJECT_FIELDS } from "@/lib/i18n/localize";
 import {
   getAllProjects,
   getProjectBySlug,
@@ -125,30 +128,59 @@ export async function generateMetadata({ params }) {
   const { slug } = await params;
   const project = await getProjectBySlug(slug);
   if (!project) return {};
+  const image = project.cover_url || project.thumbnail_url;
+  const url = `https://www.plivix-tech.com/portfolio/${slug}`;
   return {
-    title: `${project.title} — Plivix Technologies`,
+    title: `${project.title} — Case study | Plivix Technologies`,
     description: project.description,
+    alternates: { canonical: url },
+    openGraph: {
+      title: `${project.title} — Plivix Technologies`,
+      description: project.description,
+      url,
+      type: "article",
+      ...(image ? { images: [{ url: image, alt: project.title }] } : {}),
+    },
+    twitter: { card: "summary_large_image", title: project.title, description: project.description, ...(image ? { images: [image] } : {}) },
   };
 }
 
 export default async function ProjectPage({ params }) {
   const { slug } = await params;
-  const project = await getProjectBySlug(slug);
-  if (!project) notFound();
+  const { t, locale } = await getT();
+  const raw = await getProjectBySlug(slug);
+  if (!raw) notFound();
+  const project = localizeRow(raw, PROJECT_FIELDS, locale);
 
   const allProjects = await getAllProjects();
   const currentIdx = allProjects.findIndex((p) => p.slug === slug);
-  const next = allProjects[(currentIdx + 1) % allProjects.length];
+  const nextRaw = allProjects[(currentIdx + 1) % allProjects.length];
+  const next = nextRaw ? localizeRow(nextRaw, PROJECT_FIELDS, locale) : null;
   const externalHref = toExternalHref(project.live_url);
   const mediaItems = toMediaItems(project);
 
   return (
     <article className="section-gradient pt-32 md:pt-40">
+      <JsonLd
+        data={[
+          {
+            "@context": "https://schema.org",
+            "@type": "CreativeWork",
+            name: project.title,
+            description: project.description,
+            url: `https://www.plivix-tech.com/portfolio/${slug}`,
+            image: project.cover_url || project.thumbnail_url || undefined,
+            dateCreated: project.year ? String(project.year) : undefined,
+            creator: { "@id": "https://www.plivix-tech.com/#org" },
+          },
+          breadcrumbs([["Home", "/"], ["Work", "/portfolio"], [project.title, `/portfolio/${slug}`]]),
+        ]}
+      />
       <header className="section-gradient-alt container-edge pb-16 md:pb-24">
         <div className="eyebrow mb-6 flex items-center gap-3">
           <span className="w-8 h-px bg-[var(--color-fg-muted)]" />
           <span>
-            Case study · {project.category} · {project.year}
+            {t("pages.project.caseStudy")} · {project.category} · {project.year}
           </span>
         </div>
         <h1 className="heading-xl text-[var(--color-fg)] max-w-[22ch]">
@@ -166,7 +198,7 @@ export default async function ProjectPage({ params }) {
               data-cursor="hover"
               className="inline-flex items-center gap-2 rounded-full border border-[var(--color-line)] bg-[var(--color-bg-elev)] px-5 py-2.5 text-sm text-[var(--color-fg)] hover:border-[var(--color-accent)] transition-colors"
             >
-              Open project link
+              {t("pages.project.open")}
               <span aria-hidden>↗</span>
             </a>
           </p>
@@ -180,6 +212,8 @@ export default async function ProjectPage({ params }) {
             <img
               src={project.cover_url || project.thumbnail_url}
               alt={project.title}
+              fetchPriority="high"
+              decoding="async"
               className="absolute inset-0 w-full h-full object-cover"
             />
           ) : (
@@ -190,7 +224,7 @@ export default async function ProjectPage({ params }) {
 
       {mediaItems.length > 0 && (
         <section className="container-edge pb-16 md:pb-24 space-y-6">
-          <div className="eyebrow text-[var(--color-fg-muted)]">Project media</div>
+          <div className="eyebrow text-[var(--color-fg-muted)]">{t("pages.project.media")}</div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
             {mediaItems.map((item, idx) => {
               const key = `${item.kind}-${item.url}-${idx}`;
@@ -252,7 +286,7 @@ export default async function ProjectPage({ params }) {
                   rel="noopener noreferrer"
                   className="relative aspect-video w-full rounded-xl border border-[var(--color-line)] bg-[var(--color-bg-elev)] p-5 flex flex-col justify-between hover:border-[var(--color-accent)] transition-colors"
                 >
-                  <span className="eyebrow text-[var(--color-fg-muted)]">External media</span>
+                  <span className="eyebrow text-[var(--color-fg-muted)]">{t("pages.project.external")}</span>
                   <span className="text-sm text-[var(--color-fg)] break-all">{item.url}</span>
                 </a>
               );
@@ -266,19 +300,19 @@ export default async function ProjectPage({ params }) {
           <div className="col-span-12 md:col-span-4 flex flex-col gap-6">
             <div>
               <div className="eyebrow text-[var(--color-fg-muted)] mb-2">
-                Client
+                {t("pages.project.client")}
               </div>
               <div className="text-[var(--color-fg)]">{project.client}</div>
             </div>
             <div>
               <div className="eyebrow text-[var(--color-fg-muted)] mb-2">
-                Year
+                {t("pages.project.year")}
               </div>
               <div className="text-[var(--color-fg)]">{project.year}</div>
             </div>
             <div>
               <div className="eyebrow text-[var(--color-fg-muted)] mb-2">
-                Stack
+                {t("pages.project.stack")}
               </div>
               <div className="flex flex-wrap gap-2 font-mono text-xs text-[var(--color-fg-muted)]">
                 {project.tech_stack?.map((t) => (
@@ -302,7 +336,7 @@ export default async function ProjectPage({ params }) {
 
       {next && next.slug !== project.slug && (
         <section className="container-edge border-t border-[var(--color-line)] py-16 md:py-24">
-          <div className="eyebrow mb-6 text-[var(--color-fg-muted)]">Next</div>
+          <div className="eyebrow mb-6 text-[var(--color-fg-muted)]">{t("pages.project.next")}</div>
           <Link
             href={`/portfolio/${next.slug}`}
             data-cursor="hover"

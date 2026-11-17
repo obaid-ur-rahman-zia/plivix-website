@@ -47,7 +47,7 @@ export async function POST(request, context) {
     }
   }
 
-  revalidatePath("/");
+  revalidatePath("/", "layout");
   revalidatePath("/about");
   revalidatePath("/services");
   revalidatePath("/portfolio");

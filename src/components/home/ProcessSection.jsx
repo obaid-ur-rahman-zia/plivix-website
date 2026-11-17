@@ -1,0 +1,68 @@
+"use client";
+
+import { useEffect, useRef } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { prefersReducedMotion } from "@/lib/scroll/useScrollTriggerSync";
+import IconChip from "@/components/IconChip";
+import IsoBlocks from "@/components/IsoBlocks";
+import { useI18n } from "@/components/I18nProvider";
+
+export default function ProcessSection() {
+  const { t } = useI18n();
+  const ref = useRef(null);
+  const steps = t("process.steps");
+
+  useEffect(() => {
+    if (!ref.current || prefersReducedMotion()) return;
+    gsap.registerPlugin(ScrollTrigger);
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        "[data-line]",
+        { scaleY: 0 },
+        {
+          scaleY: 1, ease: "none", transformOrigin: "top",
+          scrollTrigger: { trigger: "[data-steps]", start: "top 70%", end: "bottom 60%", scrub: true },
+        }
+      );
+      gsap.utils.toArray("[data-step]").forEach((el) => {
+        gsap.from(el, {
+          y: 40, opacity: 0, duration: 0.8, ease: "expo.out", immediateRender: false,
+          scrollTrigger: { trigger: el, start: "top 88%", once: true },
+        });
+      });
+    }, ref);
+    return () => ctx.revert();
+  }, [steps]);
+
+  return (
+    <section ref={ref} className="section-gradient-alt relative container-edge py-24 md:py-40 border-t border-[var(--color-line)]">
+      <div className="eyebrow mb-6 flex items-center gap-3">
+        <span className="w-8 h-px bg-[var(--color-fg-muted)]" />
+        <span>{t("process.eyebrow")}</span>
+      </div>
+      <div className="flex items-end justify-between gap-8">
+        <h2 className="heading-lg text-[var(--color-fg)] max-w-[18ch]">{t("process.title")}</h2>
+        <IsoBlocks className="hidden md:block w-56 lg:w-72 shrink-0 -mb-6" />
+      </div>
+
+      <ol data-steps className="relative mt-14 md:mt-24 ml-3 md:ml-0">
+        <span aria-hidden className="absolute left-0 md:left-[calc(16.666%-1px)] top-2 bottom-2 w-px bg-[var(--color-line)]" />
+        <span data-line aria-hidden className="absolute left-0 md:left-[calc(16.666%-1px)] top-2 bottom-2 w-px bg-[var(--color-accent)]" />
+        {steps.map((s, i) => (
+          <li key={s.t} data-step className="relative grid grid-cols-12 gap-4 md:gap-8 pb-12 md:pb-16 last:pb-0 pl-8 md:pl-0">
+            <div className="col-span-12 md:col-span-2 eyebrow text-[var(--color-fg-muted)] md:pt-2">{s.w}</div>
+            <span aria-hidden className="absolute left-[-5px] md:left-[calc(16.666%-5px)] top-2.5 h-[11px] w-[11px] rounded-full bg-[var(--color-accent)] ring-4 ring-[var(--color-bg)]" />
+            <div className="col-span-12 md:col-span-9 md:col-start-4">
+              <div className="flex items-baseline gap-4">
+                <IconChip index={i} className="self-center" />
+                <h3 className="font-display text-2xl md:text-4xl text-[var(--color-fg)]">{s.t}</h3>
+              </div>
+              <p className="mt-3 max-w-[56ch] text-[var(--color-fg-muted)] leading-relaxed">{s.d}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </section>
+  );
+}

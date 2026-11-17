@@ -4,10 +4,10 @@
  */
 export const defaultSiteSettings = {
   id: 1,
-  contact_email: "hello@plivix-tech.com",
+  contact_email: "contact@plivix-tech.com",
   address: "",
-  location_tagline: "Remote · Global",
-  hours: "Mon – Sat · 8:00 – 17:00 UTC+5",
+  location_tagline: "" /* empty = bilingual default from i18n */,
+  hours: "",
   socials: {
     linkedin: "https://www.linkedin.com/company/plivix",
     instagram: "https://www.instagram.com/plivix.technologies/",

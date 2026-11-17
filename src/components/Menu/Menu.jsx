@@ -6,17 +6,21 @@ import { gsap } from "gsap";
 import { useSiteSettings } from "../SiteSettingsContext";
 import { getSocialLinkEntries } from "@/lib/siteSocials";
 import { prefersReducedMotion } from "@/lib/scroll/useScrollTriggerSync";
+import { useI18n } from "../I18nProvider";
 
 const menuLinks = [
-  { path: "/", label: "Home", index: "01" },
-  { path: "/portfolio", label: "Work", index: "02" },
-  { path: "/services", label: "Services", index: "03" },
-  { path: "/about", label: "About", index: "04" },
-  { path: "/internships", label: "Careers", index: "05" },
-  { path: "/contact", label: "Contact", index: "06" },
+  { path: "/", key: "home", index: "01" },
+  { path: "/portfolio", key: "work", index: "02" },
+  { path: "/services", key: "services", index: "03" },
+  { path: "/solutions", key: "solutions", index: "04" },
+  { path: "/pricing", key: "pricing", index: "05" },
+  { path: "/about", key: "about", index: "06" },
+  { path: "/internships", key: "careers", index: "07" },
+  { path: "/contact", key: "contact", index: "08" },
 ];
 
 export default function Menu({ open, onClose }) {
+  const { t } = useI18n();
   const settings = useSiteSettings();
   const socialLinks = useMemo(
     () => getSocialLinkEntries(settings.socials),
@@ -91,7 +95,7 @@ export default function Menu({ open, onClose }) {
         clipPath: "inset(0 0 100% 0)",
         pointerEvents: open ? "auto" : "none",
       }}
-      className="fixed inset-0 z-50 bg-[var(--color-bg)] flex flex-col"
+      className="fixed inset-0 z-50 bg-[var(--color-bg)] flex flex-col overflow-y-auto"
     >
       <div className="container-edge flex-1 flex flex-col min-h-0 pt-[max(5.5rem,env(safe-area-inset-top)+4rem)] md:pt-[max(6.5rem,env(safe-area-inset-top)+5rem)] pb-8 md:pb-12">
         <div className="flex-1 flex flex-col md:grid md:grid-cols-12 md:gap-x-10 lg:gap-x-14 md:min-h-0 md:items-stretch">
@@ -107,13 +111,13 @@ export default function Menu({ open, onClose }) {
                   onClick={onClose}
                   data-menu-link
                   data-cursor="hover"
-                  className="group flex items-baseline gap-4 sm:gap-6 py-3.5 md:py-4 lg:py-[1.125rem]"
+                  className="group flex items-baseline gap-4 sm:gap-6 py-2.5 md:py-2.5 lg:py-3"
                 >
                   <span className="font-mono text-xs text-[var(--color-fg-muted)] w-10 sm:w-12 shrink-0 tabular-nums">
                     {l.index}
                   </span>
-                  <span className="font-display text-[clamp(1.75rem,5vw,3.25rem)] md:text-[clamp(2rem,3.8vw,3.75rem)] lg:text-[clamp(2.25rem,3.4vw,4.25rem)] leading-[0.98] tracking-[-0.03em] text-[var(--color-fg)] group-hover:text-[var(--color-accent)] transition-colors duration-300">
-                    {l.label}
+                  <span className="font-display text-[clamp(1.5rem,6vw,2.5rem)] md:text-[clamp(1.75rem,3.2vw,3rem)] lg:text-[clamp(2rem,3vw,3.5rem)] leading-[0.98] tracking-[-0.03em] text-[var(--color-fg)] group-hover:text-[var(--color-accent)] transition-colors duration-300">
+                    {t(`nav.${l.key}`)}
                   </span>
                 </Link>
               </div>
@@ -124,8 +128,7 @@ export default function Menu({ open, onClose }) {
           {/* Meta — desktop: right column, uses empty space; mobile: below nav */}
           <aside className="mt-8 md:mt-0 md:col-span-5 lg:col-span-6 flex flex-col gap-6 md:gap-8 md:justify-end md:border-l md:border-[var(--color-line)] md:pl-8 lg:pl-10 pt-8 md:pt-0 border-t border-[var(--color-line)] md:border-t-0">
             <p data-menu-meta className="text-sm md:text-base text-[var(--color-fg-muted)] leading-relaxed max-w-[42ch]">
-              Plivix Technologies builds production web, mobile, AI and data
-              platforms.
+              {t("menu.blurb")}
             </p>
             <div
               data-menu-meta

@@ -7,7 +7,7 @@
 
 import { formStringToSocialsObject, socialsObjectToFormString } from "@/lib/admin/socialLinksForm";
 
-export const ENTITIES = ["services", "projects", "team", "testimonials", "stats", "internships"];
+export const ENTITIES = ["services", "projects", "team", "testimonials", "stats", "internships", "pricing_plans", "faqs"];
 
 /**
  * @typedef {object} FieldDef
@@ -33,6 +33,9 @@ export const ENTITY_FIELDS = {
     { key: "description", label: "Description", type: "text" },
     { key: "features", label: "Features", type: "lines", hint: "One bullet per line" },
     { key: "tech_stack", label: "Tech stack", type: "lines", hint: "One item per line" },
+    { key: "title_bn", label: "Title — Bengali (বাংলা)", type: "string" },
+    { key: "tagline_bn", label: "Tagline — Bengali (বাংলা)", type: "string" },
+    { key: "description_bn", label: "Description — Bengali (বাংলা)", type: "text" },
     { key: "icon_name", label: "Icon name (lucide id)", type: "string" },
     {
       key: "image_url",
@@ -111,7 +114,9 @@ export const ENTITY_FIELDS = {
       mediaAppend: true,
       accept: "video/*,image/*",
     },
+    { key: "title_bn", label: "Title — Bengali (বাংলা)", type: "string" },
     { key: "description", label: "Description", type: "text" },
+    { key: "description_bn", label: "Description — Bengali (বাংলা)", type: "text" },
     { key: "tech_stack", label: "Tech stack", type: "lines" },
     { key: "year", label: "Year", type: "number" },
     {
@@ -170,6 +175,9 @@ export const ENTITY_FIELDS = {
     { key: "role", label: "Role", type: "string" },
     { key: "company", label: "Company", type: "string" },
     { key: "quote", label: "Quote", type: "text", required: true },
+    { key: "quote_bn", label: "Quote — Bengali (বাংলা)", type: "text" },
+    { key: "role_bn", label: "Role — Bengali (বাংলা)", type: "string" },
+    { key: "company_bn", label: "Company — Bengali (বাংলা)", type: "string" },
     { key: "avatar_url", label: "Avatar URL", type: "url" },
     { key: "order_index", label: "Sort order", type: "number" },
     { key: "published", label: "Published", type: "boolean" },
@@ -187,6 +195,31 @@ export const ENTITY_FIELDS = {
     { key: "skills", label: "Skills", type: "lines", hint: "One per line" },
     { key: "order_index", label: "Sort order", type: "number" },
     { key: "is_active", label: "Active", type: "boolean" },
+  ],
+  pricing_plans: [
+    { key: "slug", label: "Slug", type: "string", required: true },
+    { key: "name", label: "Plan name", type: "string", required: true },
+    { key: "name_bn", label: "Plan name — Bengali (বাংলা)", type: "string" },
+    { key: "tagline", label: "Tagline", type: "string" },
+    { key: "tagline_bn", label: "Tagline — Bengali (বাংলা)", type: "string" },
+    { key: "category", label: "Category", type: "string", hint: "e.g. web, erp, ai" },
+    { key: "price_usd", label: "Price (USD)", type: "number", hint: "Leave empty for custom quote" },
+    { key: "price_note", label: "Price note", type: "string", hint: "e.g. one-time project, per month" },
+    { key: "price_note_bn", label: "Price note — Bengali (বাংলা)", type: "string" },
+    { key: "features", label: "Features", type: "lines", hint: "One per line" },
+    { key: "features_bn", label: "Features — Bengali (বাংলা)", type: "lines", hint: "One per line, same order as English" },
+    { key: "highlighted", label: "Highlight as recommended", type: "boolean" },
+    { key: "cta_label", label: "Button label", type: "string" },
+    { key: "order_index", label: "Sort order", type: "number" },
+    { key: "published", label: "Published", type: "boolean" },
+  ],
+  faqs: [
+    { key: "question", label: "Question", type: "string", required: true },
+    { key: "question_bn", label: "Question — Bengali (বাংলা)", type: "string" },
+    { key: "answer", label: "Answer", type: "text", required: true },
+    { key: "answer_bn", label: "Answer — Bengali (বাংলা)", type: "text" },
+    { key: "order_index", label: "Sort order", type: "number" },
+    { key: "published", label: "Published", type: "boolean" },
   ],
 };
 
@@ -262,6 +295,9 @@ export function emptyDefaults(entity) {
     services: {
       slug: "new-service",
       title: "New service",
+      title_bn: "",
+      tagline_bn: "",
+      description_bn: "",
       tagline: "",
       category: "Engineering",
       description: "",
@@ -277,6 +313,8 @@ export function emptyDefaults(entity) {
     projects: {
       slug: "new-project",
       title: "New project",
+      title_bn: "",
+      description_bn: "",
       client: "",
       category: "Case study",
       cover_url: null,
@@ -307,6 +345,9 @@ export function emptyDefaults(entity) {
       role: "",
       company: "",
       quote: "",
+      quote_bn: "",
+      role_bn: "",
+      company_bn: "",
       avatar_url: null,
       order_index: 0,
       published: true,
@@ -324,6 +365,31 @@ export function emptyDefaults(entity) {
       skills: [],
       order_index: 0,
       is_active: true,
+    },
+    pricing_plans: {
+      slug: "new-plan",
+      name: "New plan",
+      name_bn: "",
+      tagline: "",
+      tagline_bn: "",
+      category: "web",
+      price_usd: null,
+      price_note: "one-time project",
+      price_note_bn: "",
+      features: [],
+      features_bn: [],
+      highlighted: false,
+      cta_label: "Get a quote",
+      order_index: 0,
+      published: true,
+    },
+    faqs: {
+      question: "",
+      question_bn: "",
+      answer: "",
+      answer_bn: "",
+      order_index: 0,
+      published: true,
     },
   };
   return base[entity] ? { ...base[entity] } : {};

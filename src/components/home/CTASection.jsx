@@ -5,8 +5,11 @@ import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { prefersReducedMotion } from "@/lib/scroll/useScrollTriggerSync";
+import IsoBlocks from "@/components/IsoBlocks";
+import { useI18n } from "@/components/I18nProvider";
 
 export default function CTASection() {
+  const { t } = useI18n();
   const rootRef = useRef(null);
 
   useEffect(() => {
@@ -79,34 +82,36 @@ export default function CTASection() {
         />
       </div>
 
+      <IsoBlocks className="hidden lg:block absolute right-[4vw] top-[8%] w-[22vw] max-w-[360px] opacity-90 pointer-events-none" />
+
       <div className="eyebrow mb-10 md:mb-16 flex items-center gap-3">
         <span className="w-8 h-px bg-[var(--color-fg-muted)]" />
-        <span>Let&apos;s build</span>
+        <span>{t("cta.eyebrow")}</span>
       </div>
 
       <h2
         data-cta-line
-        className="font-display text-[clamp(3rem,13vw,13rem)] leading-[0.95] tracking-[-0.045em] text-[var(--color-fg)]"
+        className="font-display text-[clamp(2.5rem,11vw,11rem)] leading-[0.95] tracking-[-0.045em] text-[var(--color-fg)]"
       >
         <span className="block overflow-hidden pb-[0.08em]">
-          <span className="block">Have a project</span>
+          <span className="block">{t("cta.l1")}</span>
         </span>
         <span className="block overflow-hidden pb-[0.08em]">
-          <span className="block italic text-stacked-shadow">in mind?</span>
+          <span className="block italic text-stacked-shadow">{t("cta.l2")}</span>
         </span>
       </h2>
 
       <div className="mt-12 md:mt-20 flex flex-col md:flex-row md:items-end md:justify-between gap-8 border-t border-[var(--color-line)] pt-8">
         <div className="max-w-[44ch] text-[var(--color-fg-muted)] text-lg leading-relaxed">
-          Tell us about your team and what you want to ship. We reply within one
-          business day — usually faster.
+          {t("cta.text")}
         </div>
         <Link
           href="/contact"
+          data-magnetic
           data-cursor="hover"
           className="group inline-flex items-center gap-4 bg-[var(--color-accent)] text-[var(--color-on-accent)] px-8 py-5 rounded-full text-base md:text-lg font-medium transition-all hover:bg-[var(--color-accent-hover)]"
         >
-          <span>Start a project</span>
+          <span>{t("cta.button")}</span>
           <span
             aria-hidden
             className="inline-block transition-transform duration-500 group-hover:translate-x-1"

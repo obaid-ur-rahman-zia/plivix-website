@@ -1,17 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import emailjs from "emailjs-com";
 import { useSiteSettings } from "@/components/SiteSettingsContext";
-
-const SERVICE_OPTIONS = [
-  "Full-Stack Web",
-  "Application Development",
-  "AI Automation",
-  "Machine Learning",
-  "Data Science",
-  "Other",
-];
+import { useI18n } from "@/components/I18nProvider";
 
 const EMAILJS_SERVICE_ID = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || "service_h5px9eg";
 const EMAILJS_TEMPLATE_OWNER = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_OWNER || "template_s7qxn9l";
@@ -20,27 +12,44 @@ const EMAILJS_PUBLIC_KEY = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || "fnuDw7
 
 export default function ContactPage() {
   const site = useSiteSettings();
+  const { t } = useI18n();
+  const SERVICE_OPTIONS = t("contact.serviceOpts");
+  const BUDGETS = t("contact.budgetOpts");
   const contactMethods = useMemo(() => {
-    const email = site.contact_email?.trim() || "hello@plivix-tech.com";
-    const hours = site.hours?.trim() || "Mon – Sat · 8:00 – 17:00 UTC+5";
-    const locLine = site.location_tagline?.trim() || "Remote · Global";
+    const email = site.contact_email?.trim() || "contact@plivix-tech.com";
+    const hours = site.hours?.trim() || t("loc.hours");
+    const locLine = site.location_tagline?.trim() || t("loc.tagline");
     const addr = site.address?.trim();
     const locationValue = addr ? `${locLine}\n\n${addr}` : locLine;
     return [
-      { label: "Email", value: email, href: `mailto:${email}` },
-      { label: "Hours", value: hours },
-      { label: "Location", value: locationValue },
+      { label: t("contact.email"), value: email, href: `mailto:${email}` },
+      { label: t("contact.hours"), value: hours },
+      { label: t("contact.location"), value: locationValue },
     ];
-  }, [site]);
+  }, [site, t]);
 
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     company: "",
+    phone: "",
+    budget: "",
     service: "",
     message: "",
   });
   const [status, setStatus] = useState({ loading: false, submitted: false, error: null });
+
+  // Prefill from ?service=erp / ?plan=erp-suite links on the site.
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search);
+    const plan = q.get("plan");
+    const svc = q.get("service");
+    const idx = svc === "erp" || plan === "erp-suite" || plan === "enterprise" ? 0 : plan === "website" ? 1 : plan === "app" ? 3 : -1;
+    if (idx >= 0) setFormData((d) => (d.service ? d : { ...d, service: SERVICE_OPTIONS[idx] }));
+    if (plan) setFormData((d) => (d.message ? d : { ...d, message: `[Plan: ${plan}]
+` }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const onChange = (e) => {
     setFormData((d) => ({ ...d, [e.target.name]: e.target.value }));
@@ -70,7 +79,7 @@ export default function ContactPage() {
       );
       setStatus({ loading: false, submitted: true, error: null });
     } catch (error) {
-      setStatus({ loading: false, submitted: false, error: "Something went wrong. Please email us directly." });
+      setStatus({ loading: false, submitted: false, error: t("contact.error") });
     }
   };
 
@@ -79,15 +88,14 @@ export default function ContactPage() {
       <section className="section-gradient-alt container-edge pb-16 md:pb-24">
         <div className="eyebrow mb-6 flex items-center gap-3">
           <span className="w-8 h-px bg-[var(--color-fg-muted)]" />
-          <span>Contact</span>
+          <span>{t("contact.eyebrow")}</span>
         </div>
         <h1 className="heading-xl text-[var(--color-fg)] max-w-[18ch]">
-          Tell us what you want to{" "}
-          <span className="italic text-heading-accent">build</span>.
+          {t("contact.h1a")}{" "}
+          <span className="italic text-heading-accent">{t("contact.h1b")}</span>.
         </h1>
         <p className="mt-10 max-w-[56ch] text-lg text-[var(--color-fg-muted)] leading-relaxed">
-          We reply within one business day — usually faster. Share what you
-          know, we&apos;ll fill in the rest.
+          {t("contact.lead")}
         </p>
       </section>
 
@@ -98,24 +106,24 @@ export default function ContactPage() {
             {status.submitted ? (
               <div className="border border-[var(--color-line-strong)] rounded-lg p-10 text-center">
                 <div className="font-display text-3xl md:text-4xl text-[var(--color-fg)] mb-4">
-                  Message sent.
+                  {t("contact.sent")}
                 </div>
                 <p className="text-[var(--color-fg-muted)]">
-                  We&apos;ll be in touch within one business day.
+                  {t("contact.sentText")}
                 </p>
               </div>
             ) : (
               <form onSubmit={onSubmit} className="flex flex-col gap-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <Field
-                    label="Name"
+                    label={t("contact.name")}
                     name="name"
                     value={formData.name}
                     onChange={onChange}
                     required
                   />
                   <Field
-                    label="Email"
+                    label={t("contact.email")}
                     name="email"
                     type="email"
                     value={formData.email}
@@ -125,14 +133,14 @@ export default function ContactPage() {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <Field
-                    label="Company (optional)"
+                    label={t("contact.company")}
                     name="company"
                     value={formData.company}
                     onChange={onChange}
                   />
                   <div className="flex flex-col gap-2">
                     <label className="eyebrow text-[var(--color-fg-muted)]">
-                      Service
+                      {t("contact.service")}
                     </label>
                     <select
                       name="service"
@@ -141,7 +149,7 @@ export default function ContactPage() {
                       className="bg-transparent border-b border-[var(--color-line-strong)] text-[var(--color-fg)] py-3 outline-none focus:border-[var(--color-accent)] transition-colors"
                     >
                       <option value="" className="bg-[var(--color-bg)]">
-                        — select —
+                        {t("contact.select")}
                       </option>
                       {SERVICE_OPTIONS.map((s) => (
                         <option
@@ -156,9 +164,27 @@ export default function ContactPage() {
                   </div>
                 </div>
 
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <Field label={t("contact.phone")} name="phone" type="tel" value={formData.phone} onChange={onChange} />
+                  <div className="flex flex-col gap-2">
+                    <label className="eyebrow text-[var(--color-fg-muted)]">{t("contact.budget")}</label>
+                    <select
+                      name="budget"
+                      value={formData.budget}
+                      onChange={onChange}
+                      className="bg-transparent border-b border-[var(--color-line-strong)] text-[var(--color-fg)] py-3 outline-none focus:border-[var(--color-accent)] transition-colors"
+                    >
+                      <option value="" className="bg-[var(--color-bg)]">{t("contact.select")}</option>
+                      {BUDGETS.map((b) => (
+                        <option key={b} value={b} className="bg-[var(--color-bg)]">{b}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
                 <div className="flex flex-col gap-2">
                   <label className="eyebrow text-[var(--color-fg-muted)]">
-                    Tell us about your project
+                    {t("contact.message")}
                   </label>
                   <textarea
                     name="message"
@@ -167,7 +193,7 @@ export default function ContactPage() {
                     rows={6}
                     required
                     className="bg-transparent border-b border-[var(--color-line-strong)] text-[var(--color-fg)] py-3 outline-none focus:border-[var(--color-accent)] transition-colors resize-none"
-                    placeholder="What are you building? Timeline? Constraints?"
+                    placeholder={t("contact.placeholder")}
                   />
                 </div>
 
@@ -182,7 +208,7 @@ export default function ContactPage() {
                     data-cursor="hover"
                     className="inline-flex items-center gap-3 bg-[var(--color-accent)] text-[var(--color-on-accent)] px-8 py-4 rounded-full hover:bg-[var(--color-accent-hover)] disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
                   >
-                    {status.loading ? "Sending…" : "Send message"}
+                    {status.loading ? t("contact.sending") : t("contact.send")}
                     <span aria-hidden>→</span>
                   </button>
                 </div>
@@ -194,7 +220,7 @@ export default function ContactPage() {
           <aside className="col-span-12 md:col-span-4 flex flex-col gap-10">
             <div>
               <div className="eyebrow text-[var(--color-fg-muted)] mb-6">
-                Direct
+                {t("contact.direct")}
               </div>
               <ul className="flex flex-col gap-5">
                 {contactMethods.map((m) => (
@@ -221,27 +247,15 @@ export default function ContactPage() {
             </div>
             <div className="border-t border-[var(--color-line)] pt-6">
               <div className="eyebrow text-[var(--color-fg-muted)] mb-3">
-                What happens next
+                {t("contact.next")}
               </div>
               <ol className="flex flex-col gap-3 text-sm text-[var(--color-fg)]">
-                <li>
-                  <span className="text-[var(--color-accent)] font-mono mr-2">
-                    01
-                  </span>
-                  Intro call within one business day.
-                </li>
-                <li>
-                  <span className="text-[var(--color-accent)] font-mono mr-2">
-                    02
-                  </span>
-                  Scoping doc + fixed-price proposal in 3–5 days.
-                </li>
-                <li>
-                  <span className="text-[var(--color-accent)] font-mono mr-2">
-                    03
-                  </span>
-                  Kick-off within the week if it&apos;s a fit.
-                </li>
+                {t("contact.steps").map((st, i) => (
+                  <li key={st}>
+                    <span className="text-[var(--color-accent)] font-mono mr-2">{String(i + 1).padStart(2, "0")}</span>
+                    {st}
+                  </li>
+                ))}
               </ol>
             </div>
           </aside>

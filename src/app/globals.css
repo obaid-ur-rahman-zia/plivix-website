@@ -684,3 +684,73 @@ html.lenis body {
 .lenis.lenis-stopped {
   overflow: hidden;
 }
+
+/* --------------------------------------------------------------------
+ * Bengali — conjuncts and matras need open leading and no negative
+ * tracking, and there is no real italic.
+ * ------------------------------------------------------------------ */
+:root[lang="bn"] {
+  --font-display: var(--font-bengali), var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-body: var(--font-bengali), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+}
+:root[lang="bn"] body,
+:root[lang="bn"] .font-display,
+:root[lang="bn"] .heading-xl,
+:root[lang="bn"] .heading-lg,
+:root[lang="bn"] .heading-md,
+:root[lang="bn"] h1,
+:root[lang="bn"] h2,
+:root[lang="bn"] h3 {
+  letter-spacing: 0 !important;
+  font-feature-settings: normal;
+}
+:root[lang="bn"] .heading-xl,
+:root[lang="bn"] .heading-lg,
+:root[lang="bn"] .heading-md,
+:root[lang="bn"] h1,
+:root[lang="bn"] h2,
+:root[lang="bn"] h3 {
+  line-height: 1.3 !important;
+}
+:root[lang="bn"] .heading-xl { font-size: clamp(2.5rem, 8vw, 8rem); }
+:root[lang="bn"] .heading-lg { font-size: clamp(2rem, 5.2vw, 5.5rem); }
+:root[lang="bn"] .italic { font-style: normal; }
+:root[lang="bn"] .eyebrow { letter-spacing: 0.04em; text-transform: none; font-family: var(--font-bengali), var(--font-mono); font-size: 0.8rem; }
+:root[lang="bn"] .font-mono { font-family: var(--font-bengali), var(--font-mono); }
+
+/* Reserve room for the mobile sticky CTA bar */
+@media (max-width: 767px) {
+  footer { padding-bottom: 5rem; }
+}
+
+/* Colour helpers */
+.text-gradient {
+  background: linear-gradient(90deg, var(--chroma-cyan), var(--chroma-violet) 50%, var(--chroma-pink));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+:root[data-theme="light"] .text-gradient {
+  background: linear-gradient(90deg, #0e8fb3, #5b34d6 50%, #c2306f);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+[data-tilt] { transform-style: preserve-3d; will-change: transform; position: relative; }
+[data-tilt]::after {
+  content: "";
+  position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background: radial-gradient(260px circle at var(--mx, 50%) var(--my, -50%), color-mix(in oklab, var(--color-accent) 22%, transparent), transparent 70%);
+  opacity: 0; transition: opacity .3s;
+}
+[data-tilt]:hover::after { opacity: 1; }
+.chip-cyan { --chip: var(--chroma-cyan); }
+.chip-violet { --chip: var(--chroma-violet); }
+.chip-pink { --chip: var(--chroma-pink); }
+.chip-amber { --chip: var(--chroma-amber); }
+.icon-chip {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 2.5rem; height: 2.5rem; border-radius: 0.75rem; flex-shrink: 0;
+  color: var(--chip);
+  background: color-mix(in oklab, var(--chip) 16%, transparent);
+  border: 1px solid color-mix(in oklab, var(--chip) 35%, transparent);
+}

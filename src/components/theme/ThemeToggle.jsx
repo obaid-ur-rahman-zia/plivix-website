@@ -2,6 +2,7 @@
 
 import { useTheme } from "./ThemeProvider";
 import { Monitor, Sun, Moon } from "lucide-react";
+import { useI18n } from "../I18nProvider";
 
 const OPTIONS = [
   { key: "system", label: "System", Icon: Monitor },
@@ -11,6 +12,7 @@ const OPTIONS = [
 
 export default function ThemeToggle({ variant = "segmented", forceDark = false }) {
   const { theme, setTheme, cycle, mounted } = useTheme();
+  const { t } = useI18n();
 
   if (variant === "cycle") {
     const current = OPTIONS.find((o) => o.key === theme) || OPTIONS[0];
@@ -19,7 +21,7 @@ export default function ThemeToggle({ variant = "segmented", forceDark = false }
       <button
         type="button"
         onClick={cycle}
-        aria-label={`Theme: ${current.label} (click to switch)`}
+        aria-label={`${t("theme.label")}: ${t(`theme.${current.key}`)}`}
         data-cursor="hover"
         suppressHydrationWarning
         className="relative w-10 h-10 flex items-center justify-center border rounded-full transition-colors hover:border-[var(--color-accent)] hover:text-[var(--color-accent)]"
@@ -38,11 +40,11 @@ export default function ThemeToggle({ variant = "segmented", forceDark = false }
   return (
     <div
       role="radiogroup"
-      aria-label="Theme"
+      aria-label={t("theme.label")}
       suppressHydrationWarning
       className="inline-flex items-center gap-0 p-0.5 rounded-full border border-[var(--color-line-strong)] bg-[var(--color-bg-elev)]/40 backdrop-blur-sm"
     >
-      {OPTIONS.map(({ key, label, Icon }) => {
+      {OPTIONS.map(({ key, Icon }) => {
         const active = mounted && theme === key;
         return (
           <button
@@ -50,7 +52,7 @@ export default function ThemeToggle({ variant = "segmented", forceDark = false }
             type="button"
             role="radio"
             aria-checked={active}
-            aria-label={label}
+            aria-label={t(`theme.${key}`)}
             onClick={() => setTheme(key)}
             data-cursor="hover"
             className={`w-7 h-7 rounded-full flex items-center justify-center transition-colors ${

@@ -4,6 +4,53 @@
  */
 export const services = [
   {
+    slug: "erp-systems",
+    title: "ERP Systems",
+    title_bn: "ERP সিস্টেম",
+    tagline: "One system for stock, sales, accounts and people.",
+    tagline_bn: "স্টক, সেলস, হিসাব ও মানুষ — এক সিস্টেমে।",
+    category: "Business systems",
+    description:
+      "Custom ERP built around how your company works. We map your process, replace spreadsheets and disconnected tools, and roll out module by module so your team keeps working while we change the system underneath.",
+    description_bn:
+      "আপনার কোম্পানির কাজের ধরন অনুযায়ী কাস্টম ERP। আমরা প্রক্রিয়া বুঝে স্প্রেডশিট ও বিচ্ছিন্ন টুল সরিয়ে একটি একটি মডিউল চালু করি, যাতে নিচে সিস্টেম বদলালেও আপনার টিম কাজ চালিয়ে যেতে পারে।",
+    features: [
+      "Inventory, sales, purchasing, accounting",
+      "HR, payroll and attendance",
+      "Multi-branch, multi-warehouse, multi-currency",
+      "Bangla and English screens and invoices",
+      "Role permissions and audit trail",
+      "Data migration and staff training",
+    ],
+    tech_stack: ["Next.js", "Node.js", "Postgres", "Docker", "Redis"],
+    icon_name: "layers",
+    order_index: 1,
+    published: true,
+  },
+  {
+    slug: "business-software",
+    title: "CRM, HR & POS",
+    title_bn: "CRM, HR ও POS",
+    tagline: "Focused tools when you do not need a full ERP.",
+    tagline_bn: "পুরো ERP না লাগলে প্রয়োজনমতো আলাদা টুল।",
+    category: "Business systems",
+    description:
+      "A customer database, a payroll system or a point-of-sale that fits one department. Each can stand alone and later plug into a larger ERP without a rebuild.",
+    description_bn:
+      "একটি বিভাগের উপযোগী কাস্টমার ডেটাবেস, পেরোল বা পয়েন্ট-অফ-সেল। প্রতিটি আলাদাভাবে চলে এবং পরে নতুন করে না বানিয়েই বড় ERP-র সাথে যুক্ত করা যায়।",
+    features: [
+      "Customer and lead tracking",
+      "Payroll, leave and payslips",
+      "Retail and restaurant POS",
+      "Dashboards and scheduled reports",
+      "WhatsApp and SMS notifications",
+    ],
+    tech_stack: ["React", "Node.js", "Postgres", "React Native"],
+    icon_name: "briefcase",
+    order_index: 2,
+    published: true,
+  },
+  {
     slug: "full-stack-web",
     title: "Full-Stack Web",
     tagline: "Production web platforms that ship and scale.",
@@ -20,7 +67,7 @@ export const services = [
     ],
     tech_stack: ["Next.js", "React", "TypeScript", "Postgres", "Supabase", "Vercel"],
     icon_name: "code",
-    order_index: 1,
+    order_index: 3,
     published: true,
   },
   {
@@ -39,7 +86,7 @@ export const services = [
     ],
     tech_stack: ["React Native", "Expo", "Swift", "Kotlin", "Firebase"],
     icon_name: "smartphone",
-    order_index: 2,
+    order_index: 4,
     published: true,
   },
   {
@@ -58,7 +105,7 @@ export const services = [
     ],
     tech_stack: ["OpenAI", "Anthropic", "LangGraph", "Vercel AI SDK", "Pinecone"],
     icon_name: "sparkles",
-    order_index: 3,
+    order_index: 5,
     published: true,
   },
   {
@@ -77,7 +124,7 @@ export const services = [
     ],
     tech_stack: ["PyTorch", "scikit-learn", "FastAPI", "Docker", "MLflow"],
     icon_name: "cpu",
-    order_index: 4,
+    order_index: 6,
     published: true,
   },
   {
@@ -96,7 +143,7 @@ export const services = [
     ],
     tech_stack: ["Python", "dbt", "BigQuery", "Postgres", "Metabase"],
     icon_name: "bar-chart",
-    order_index: 5,
+    order_index: 7,
     published: true,
   },
 ];

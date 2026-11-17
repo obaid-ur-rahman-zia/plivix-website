@@ -5,6 +5,8 @@ import Loader from "@/components/Loader/Loader";
 import NavHeader from "@/components/NavHeader";
 import Cursor from "@/components/Cursor/Cursor";
 import PageBackground from "@/components/PageBackground";
+import StickyCta from "@/components/StickyCta";
+import Interactions from "@/components/Interactions";
 
 /**
  * We intentionally do NOT gate the page's opacity on `isComplete` anymore.
@@ -26,11 +28,13 @@ export default function RootSectionLayout({ children }) {
     <>
       <Loader />
       <Cursor />
+      <Interactions />
       <PageBackground />
       <div className="relative">
         <NavHeader />
         <main id="main">{children}</main>
         <Footer />
+        <StickyCta />
       </div>
     </>
   );
