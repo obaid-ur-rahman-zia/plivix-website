@@ -2,7 +2,6 @@
 
 import { useEffect, useRef } from "react";
 import Link from "next/link";
-import { HoverImagePreviewLayer, useHoverImagePreview } from "@/components/HoverImagePreview";
 import { revealOnScroll } from "@/lib/scroll/reveal";
 import { useI18n } from "@/components/I18nProvider";
 
@@ -11,7 +10,6 @@ export default function AboutPage({ team = [], stats = [], beforeCta }) {
   const { t } = useI18n();
   const values = t("pages.about.values");
   const timeline = t("pages.about.timeline");
-  const { active: hoverImage, bind: bindHoverImage, clear: clearHoverImage } = useHoverImagePreview();
 
   useEffect(() => {
     if (!rootRef.current) return;
@@ -126,42 +124,48 @@ export default function AboutPage({ team = [], stats = [], beforeCta }) {
                 <span className="italic text-heading-accent">{t("pages.about.teamB")}</span>.
               </h2>
             </div>
-            <div className="col-span-12 md:col-span-8 flex flex-col relative">
-              <HoverImagePreviewLayer active={hoverImage} onClear={clearHoverImage} />
+            <ul className="col-span-12 md:col-span-8 grid grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-10 md:gap-x-6 md:gap-y-14">
               {team.map((m) => {
                 const img = m.image_url || m.thumbnail_url;
+                const initials = String(m.name || "")
+                  .split(/\s+/)
+                  .map((w) => w[0])
+                  .slice(0, 2)
+                  .join("")
+                  .toUpperCase();
                 return (
-                  <div
-                    key={m.id ?? m.name}
-                    data-reveal
-                    className="group/row grid grid-cols-12 gap-6 border-t border-[var(--color-line)] py-8 transition-colors duration-300 hover:bg-[color-mix(in_oklab,var(--color-fg)_4%,transparent)]"
-                    {...(img ? bindHoverImage(img, m.id ?? m.name) : {})}
-                  >
-                    <h3 className="col-span-12 md:col-span-6 font-display text-2xl md:text-3xl tracking-[-0.025em] text-[var(--color-fg)]">
+                  <li key={m.id ?? m.name} data-reveal className="group flex flex-col">
+                    <div className="relative aspect-[4/5] overflow-hidden rounded-sm border border-[var(--color-line)] bg-[var(--color-bg-soft)]">
+                      {img ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={img}
+                          alt={m.name}
+                          loading="lazy"
+                          decoding="async"
+                          className="absolute inset-0 w-full h-full object-cover grayscale-[35%] transition-[transform,filter] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:grayscale-0 group-hover:scale-[1.03]"
+                        />
+                      ) : (
+                        <span aria-hidden className="absolute inset-0 flex items-center justify-center font-display text-4xl md:text-5xl text-[var(--color-fg-muted)]">
+                          {initials}
+                        </span>
+                      )}
+                    </div>
+                    <h3 className="mt-4 font-display text-lg md:text-xl leading-tight tracking-[-0.02em] text-[var(--color-fg)]">
                       {m.name}
                     </h3>
-                    <div className="col-span-12 md:col-span-6 text-[var(--color-fg-muted)]">
-                      {m.role}
-                      {m.bio ? (
-                        <p className="mt-2 text-sm leading-relaxed">{m.bio}</p>
-                      ) : null}
-                      {m.video_url ? (
-                        <div className="mt-4 relative w-full max-w-lg aspect-video rounded-xl overflow-hidden border border-[var(--color-line)] bg-black">
-                          {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-                          <video
-                            src={m.video_url}
-                            className="absolute inset-0 w-full h-full object-cover"
-                            controls
-                            playsInline
-                          />
-                        </div>
-                      ) : null}
-                    </div>
-                  </div>
+                    <div className="mt-1 text-sm text-[var(--color-fg-muted)]">{m.role}</div>
+                    {m.bio ? <p className="mt-2 text-sm leading-relaxed text-[var(--color-fg-muted)] line-clamp-3">{m.bio}</p> : null}
+                    {m.video_url ? (
+                      <div className="mt-3 relative w-full aspect-video rounded-sm overflow-hidden border border-[var(--color-line)] bg-black">
+                        {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+                        <video src={m.video_url} className="absolute inset-0 w-full h-full object-cover" controls playsInline preload="metadata" />
+                      </div>
+                    ) : null}
+                  </li>
                 );
               })}
-              <div className="border-t border-[var(--color-line)]" />
-            </div>
+            </ul>
           </div>
         </section>
       )}
