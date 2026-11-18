@@ -770,28 +770,12 @@ html.lenis body {
 /* Intro loader: never paint it again within the same session */
 html[data-seen] [data-loader] { display: none !important; }
 
-/* ASCII skeletons */
-.ascii-skel {
-  font-family: var(--font-mono);
-  color: var(--color-fg-subtle);
-  white-space: pre;
-  line-height: 1.35;
-  overflow: hidden;
-}
-.ascii-skel .ascii-shimmer {
-  background: linear-gradient(90deg, var(--color-fg-subtle) 0%, var(--color-fg-muted) 50%, var(--color-fg-subtle) 100%);
-  background-size: 200% 100%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  animation: ascii-shimmer 1.6s linear infinite;
-}
-@keyframes ascii-shimmer {
-  from { background-position: 200% 0; }
-  to { background-position: 0 0; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .ascii-skel .ascii-shimmer { animation: none; }
+/* ascii-reveal theming (skeletons + page reveal) */
+:root {
+  --ascii-font: var(--font-jetbrains), ui-monospace, monospace;
+  --ascii-accent: var(--color-accent);
+  --ascii-skeleton: var(--color-fg-muted);
+  --ascii-glyph: var(--color-fg-muted);
 }
 
 /* Product wireframes: small hover motion */

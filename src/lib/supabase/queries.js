@@ -84,26 +84,21 @@ function isTeamSeedPlaceholder(id) {
   return typeof id === "string" && id.startsWith(TEAM_SEED_ID_PREFIX);
 }
 
-function pickPreferredTeamRow(a, b) {
-  const aPh = isTeamSeedPlaceholder(a.id);
-  const bPh = isTeamSeedPlaceholder(b.id);
-  if (aPh && !bPh) return b;
-  if (!aPh && bPh) return a;
-  return String(a.id ?? "").localeCompare(String(b.id ?? "")) <= 0 ? a : b;
-}
-
-function dedupeTeamRows(rows) {
+/**
+ * Team order comes only from `order_index` (set by drag-and-drop in the CMS).
+ * Seed placeholder rows are hidden once real members exist, and rows that
+ * share an order value are kept (sorted by creation time), never dropped.
+ */
+function normalizeTeamRows(rows) {
   if (!rows?.length) return [];
-  const byOrder = new Map();
-  for (const r of sortBy(rows, "order_index")) {
-    const oi = r.order_index ?? 0;
-    if (!byOrder.has(oi)) {
-      byOrder.set(oi, r);
-      continue;
-    }
-    byOrder.set(oi, pickPreferredTeamRow(byOrder.get(oi), r));
-  }
-  return sortBy([...byOrder.values()], "order_index");
+  const real = rows.filter((r) => !isTeamSeedPlaceholder(r.id));
+  const list = real.length ? real : rows;
+  return [...list].sort(
+    (a, b) =>
+      (a.order_index ?? 0) - (b.order_index ?? 0) ||
+      String(a.created_at ?? "").localeCompare(String(b.created_at ?? "")) ||
+      String(a.name ?? "").localeCompare(String(b.name ?? ""))
+  );
 }
 
 async function query(table, localFallback, filter = {}) {
@@ -148,7 +143,7 @@ export async function getServiceBySlug(slug) {
 
 export async function getTeam() {
   const rows = await query("team", localTeam, { active: true });
-  return dedupeTeamRows(rows);
+  return normalizeTeamRows(rows);
 }
 
 export async function getTestimonials() {

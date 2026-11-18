@@ -97,6 +97,15 @@ export async function POST(request, context) {
   if (!admin) {
     return NextResponse.json({ error: "Supabase admin client unavailable" }, { status: 503 });
   }
+  if (insert.order_index === undefined || insert.order_index === null || insert.order_index === "") {
+    const { data: last } = await admin
+      .from(entity)
+      .select("order_index")
+      .order("order_index", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    insert.order_index = (last?.order_index ?? -1) + 1;
+  }
   const { data, error } = await admin.from(entity).insert(insert).select().single();
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });

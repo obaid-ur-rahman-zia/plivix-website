@@ -2,6 +2,10 @@
 
 > Plivix Technologies builds custom ERP systems, web platforms, mobile apps and AI automation for growing companies in Bangladesh and worldwide. Registered in Bangladesh. Works in English and Bangla.
 
+## Brand
+The name Plivix joins two ideas: PLI = Progress, Logic & Innovation; VIX = Vision, Intelligence & X (unlimited possibilities).
+Philosophy: "Progress through Logic, Innovation through Vision."
+
 ## What we do
 - ERP and business systems: inventory, sales and CRM, purchasing, accounting and VAT, HR and payroll, production, POS, reporting.
 - Web platforms and company websites (Bangla and English).

@@ -1,5 +1,7 @@
 import AboutPage from "@/components/AboutPage";
 import GlanceSection from "@/components/home/GlanceSection";
+import { getLocale } from "@/lib/i18n/server";
+import { localizeRows, TEAM_FIELDS } from "@/lib/i18n/localize";
 import { getTeam, getStats } from "@/lib/supabase/queries";
 
 export const revalidate = 3600;
@@ -7,17 +9,18 @@ export const revalidate = 3600;
 export const metadata = {
   title: "About — Plivix Technologies",
   description:
-    "A small, senior engineering team shipping production web, mobile, AI and data platforms.",
+    "Plivix Technologies: PLI (Progress, Logic & Innovation) + VIX (Vision, Intelligence & X). A software company in Bangladesh and Pakistan building ERP, management systems, apps and AI automation.",
   openGraph: {
     title: "About — Plivix Technologies",
     description:
-      "A small, senior engineering team shipping production web, mobile, AI and data platforms.",
+      "Plivix Technologies: PLI (Progress, Logic & Innovation) + VIX (Vision, Intelligence & X). A software company in Bangladesh and Pakistan building ERP, management systems, apps and AI automation.",
     url: "https://www.plivix-tech.com/about",
   },
   alternates: { canonical: "https://www.plivix-tech.com/about" },
 };
 
 export default async function About() {
-  const [team, stats] = await Promise.all([getTeam(), getStats()]);
+  const [rows, stats, locale] = await Promise.all([getTeam(), getStats(), getLocale()]);
+  const team = localizeRows(rows, TEAM_FIELDS, locale);
   return <AboutPage team={team} stats={stats} beforeCta={<GlanceSection />} />;
 }

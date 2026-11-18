@@ -132,7 +132,9 @@ export const ENTITY_FIELDS = {
   team: [
     { key: "name", label: "Name", type: "string", required: true },
     { key: "role", label: "Role", type: "string", required: true },
-    { key: "bio", label: "Bio", type: "text" },
+    { key: "bio", label: "Bio", type: "text", hint: "One or two short sentences." },
+    { key: "role_bn", label: "Role — Bengali (বাংলা)", type: "string" },
+    { key: "bio_bn", label: "Bio — Bengali (বাংলা)", type: "text" },
     {
       key: "image_url",
       label: "Photo URL",
@@ -167,8 +169,8 @@ export const ENTITY_FIELDS = {
       type: "social_links",
       hint: "Add one row per profile. Choose Other for a custom key (e.g. dribbble).",
     },
-    { key: "order_index", label: "Sort order", type: "number" },
-    { key: "active", label: "Active", type: "boolean" },
+    { key: "order_index", label: "Sort order", type: "number", hint: "Lower shows first. Easier: drag rows in the list." },
+    { key: "active", label: "Active (show on site)", type: "boolean" },
   ],
   testimonials: [
     { key: "author", label: "Author", type: "string", required: true },

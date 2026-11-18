@@ -15,3 +15,4 @@ export const PROJECT_FIELDS = ["title", "description"];
 export const TESTIMONIAL_FIELDS = ["quote", "role", "company"];
 export const PRICING_FIELDS = ["name", "tagline", "price_note", "features"];
 export const FAQ_FIELDS = ["question", "answer"];
+export const TEAM_FIELDS = ["role", "bio"];

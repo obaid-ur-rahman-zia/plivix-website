@@ -268,6 +268,16 @@ const en = {
       h1b: "careful",
       h1c: "work.",
       lead: "A Bangladesh software company building ERP, web, mobile and AI systems for clients at home and abroad.",
+      brand: {
+        eyebrow: "Brand story",
+        title: "What Plivix means",
+        body: "The name joins two ideas. PLI is how we work. VIX is where we are going.",
+        parts: [
+          { k: "PLI", t: "Progress, Logic & Innovation", d: "Steady progress, clear reasoning and new ideas in every system we build." },
+          { k: "VIX", t: "Vision, Intelligence & X", d: "A clear vision, intelligent software, and X for the possibilities still ahead." },
+        ],
+        motto: "Progress through Logic, Innovation through Vision.",
+      },
       howEyebrow: "How we work",
       valuesA: "Values",
       valuesB: "we work by",
@@ -288,6 +298,7 @@ const en = {
       teamEyebrow: "Team",
       teamA: "People behind",
       teamB: "the work",
+      teamLead: "A small senior team. You talk to the people who build your system.",
       ctaTitle: "Want to work with us?",
     },
     careers: {
@@ -572,6 +583,16 @@ const bn = {
       h1b: "যত্নশীল",
       h1c: "কাজ।",
       lead: "বাংলাদেশভিত্তিক সফটওয়্যার কোম্পানি — দেশ ও বিদেশের জন্য ERP, ওয়েব, মোবাইল ও AI সিস্টেম।",
+      brand: {
+        eyebrow: "ব্র্যান্ডের গল্প",
+        title: "Plivix নামের অর্থ",
+        body: "নামটি দুটি ধারণার মিলন। PLI আমাদের কাজের ধরন, VIX আমাদের লক্ষ্য।",
+        parts: [
+          { k: "PLI", t: "অগ্রগতি, যুক্তি ও উদ্ভাবন", d: "আমাদের প্রতিটি সিস্টেমে ধারাবাহিক অগ্রগতি, স্পষ্ট যুক্তি ও নতুন ভাবনা।" },
+          { k: "VIX", t: "দূরদৃষ্টি, বুদ্ধিমত্তা ও X", d: "স্পষ্ট দূরদৃষ্টি, বুদ্ধিমান সফটওয়্যার, আর X — সামনের অসীম সম্ভাবনা।" },
+        ],
+        motto: "যুক্তির পথে অগ্রগতি, দূরদৃষ্টির পথে উদ্ভাবন।",
+      },
       howEyebrow: "আমাদের কাজের ধরন",
       valuesA: "যে নীতিতে",
       valuesB: "আমরা কাজ করি",
@@ -592,6 +613,7 @@ const bn = {
       teamEyebrow: "টিম",
       teamA: "কাজের পেছনের",
       teamB: "মানুষেরা",
+      teamLead: "ছোট, অভিজ্ঞ টিম। যারা আপনার সিস্টেম বানায়, তাদের সাথেই সরাসরি কথা বলবেন।",
       ctaTitle: "আমাদের সাথে কাজ করতে চান?",
     },
     careers: {
