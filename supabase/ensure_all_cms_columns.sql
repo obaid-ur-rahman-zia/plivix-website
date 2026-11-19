@@ -109,3 +109,7 @@ update public.site_settings set location_tagline = null
   where id = 1 and location_tagline ilike 'remote%global';
 update public.site_settings set hours = null
   where id = 1 and hours ilike '%utc+5%';
+
+-- Bengali fields for team members (About page).
+alter table public.team add column if not exists role_bn text;
+alter table public.team add column if not exists bio_bn text;

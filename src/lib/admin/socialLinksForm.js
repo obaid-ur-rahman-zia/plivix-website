@@ -3,7 +3,9 @@
  * Form stores a JSON string of row objects for FieldInput state.
  */
 
-const PRESET_KEYS = new Set(["linkedin", "x", "github", "instagram", "website"]);
+import { SOCIAL_PLATFORMS } from "@/lib/siteSocials";
+
+const PRESET_KEYS = new Set(SOCIAL_PLATFORMS.map((p) => p.key));
 
 function newId() {
   if (typeof crypto !== "undefined" && crypto.randomUUID) return crypto.randomUUID();

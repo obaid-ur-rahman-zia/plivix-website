@@ -2,15 +2,13 @@
 
 import { useCallback, useMemo } from "react";
 import { socialsObjectToFormString } from "@/lib/admin/socialLinksForm";
+import { SOCIAL_PLATFORMS } from "@/lib/siteSocials";
 
 const PRESETS = [
-  { value: "linkedin", label: "LinkedIn" },
-  { value: "x", label: "X (Twitter)" },
-  { value: "github", label: "GitHub" },
-  { value: "instagram", label: "Instagram" },
-  { value: "website", label: "Website" },
+  ...SOCIAL_PLATFORMS.map((p) => ({ value: p.key, label: p.label })),
   { value: "custom", label: "Other" },
 ];
+const PLACEHOLDERS = Object.fromEntries(SOCIAL_PLATFORMS.map((p) => [p.key, p.placeholder]));
 
 const base =
   "w-full rounded-xl border border-[var(--color-line)] bg-[var(--color-bg)] px-3 py-2 text-sm text-[var(--color-fg)] placeholder:text-[var(--color-fg-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]";
@@ -129,7 +127,7 @@ export default function SocialLinksField({ fieldKey, label, hint, required, valu
                 type="url"
                 value={row.url || ""}
                 onChange={(e) => updateRow(index, { url: e.target.value })}
-                placeholder="https://"
+                placeholder={PLACEHOLDERS[row.key] || "https://"}
                 className={base}
               />
             </div>

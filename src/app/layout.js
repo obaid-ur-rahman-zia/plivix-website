@@ -60,7 +60,7 @@ export const metadata = {
   metadataBase: new URL("https://www.plivix-tech.com"),
   title: "Plivix Technologies — ERP, web, mobile & AI software",
   description:
-    "Plivix Technologies builds ERP systems, web platforms, mobile apps and AI automation for companies in Bangladesh and worldwide. Fixed-price proposals and clear software pricing.",
+    "ERP, management systems, AI automation, websites and mobile apps for businesses in Bangladesh and worldwide. Fixed-price quotes from Plivix Technologies.",
   keywords: [
     "ERP software Bangladesh",
     "ERP development",
