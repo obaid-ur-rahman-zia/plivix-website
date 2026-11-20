@@ -9,7 +9,7 @@ import { localizeRows, FAQ_FIELDS } from "@/lib/i18n/localize";
 export const metadata = {
   title: "ERP & Business Software — Plivix Technologies",
   description:
-    "Custom ERP, CRM, HR, inventory and POS systems for companies in Bangladesh and worldwide. Bangla and English, fixed-price proposals.",
+    "Custom ERP, CRM, HR, inventory and POS systems for companies in Bangladesh, Pakistan and worldwide. Bangla, Urdu and English, fixed-price quotes.",
   alternates: { canonical: "/solutions" },
 };
 

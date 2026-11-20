@@ -9,11 +9,11 @@ export const revalidate = 3600;
 export const metadata = {
   title: "About — Plivix Technologies",
   description:
-    "Plivix = PLI (Progress, Logic & Innovation) + VIX (Vision, Intelligence & X). A Bangladesh software company building ERP, management systems and apps.",
+    "Plivix = PLI (Progress, Logic & Innovation) + VIX (Vision, Intelligence & X). Software company in Bangladesh and Pakistan building ERP, systems and apps.",
   openGraph: {
     title: "About — Plivix Technologies",
     description:
-      "Plivix = PLI (Progress, Logic & Innovation) + VIX (Vision, Intelligence & X). A Bangladesh software company building ERP, management systems and apps.",
+      "Plivix = PLI (Progress, Logic & Innovation) + VIX (Vision, Intelligence & X). Software company in Bangladesh and Pakistan building ERP, systems and apps.",
     url: "https://www.plivix-tech.com/about",
   },
   alternates: { canonical: "https://www.plivix-tech.com/about" },

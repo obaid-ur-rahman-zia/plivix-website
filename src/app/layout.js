@@ -60,11 +60,13 @@ export const metadata = {
   metadataBase: new URL("https://www.plivix-tech.com"),
   title: "Plivix Technologies — ERP, web, mobile & AI software",
   description:
-    "ERP, management systems, AI automation, websites and mobile apps for businesses in Bangladesh and worldwide. Fixed-price quotes from Plivix Technologies.",
+    "ERP, management systems, AI, websites and mobile apps for businesses in Bangladesh, Pakistan and worldwide. Fixed-price quotes from Plivix Technologies.",
   keywords: [
     "ERP software Bangladesh",
     "ERP development",
     "software company Bangladesh",
+    "software company Pakistan",
+    "ERP software Pakistan",
     "custom software pricing",
     "Plivix",
     "Plivix Technologies",
@@ -157,13 +159,17 @@ export default async function RootLayout({ children }) {
                 "AI automation",
                 "Data analytics",
               ],
-              knowsLanguage: ["en", "bn"],
+              knowsLanguage: ["en", "bn", "ur"],
               name: "Plivix Technologies",
               url: "https://www.plivix-tech.com",
               logo: "https://www.plivix-tech.com/icon-512.png",
               email: siteSettings.contact_email,
               areaServed: ["Bangladesh", "Pakistan", "Worldwide"],
               address: { "@type": "PostalAddress", addressCountry: "BD" },
+              location: [
+                { "@type": "Place", address: { "@type": "PostalAddress", addressCountry: "BD" } },
+                { "@type": "Place", address: { "@type": "PostalAddress", addressCountry: "PK" } },
+              ],
               ...(sameAs.length > 0 ? { sameAs } : {}),
               description:
                 "Plivix Technologies builds ERP and management systems, web platforms, mobile apps and AI automation. The name stands for PLI (Progress, Logic & Innovation) and VIX (Vision, Intelligence & X).",

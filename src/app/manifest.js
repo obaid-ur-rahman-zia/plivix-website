@@ -2,7 +2,7 @@ export default function manifest() {
   return {
     name: "Plivix Technologies",
     short_name: "Plivix",
-    description: "ERP, web, mobile and AI software for companies in Bangladesh and worldwide.",
+    description: "ERP, web, mobile and AI software for companies in Bangladesh, Pakistan and worldwide.",
     start_url: "/",
     display: "standalone",
     background_color: "#000000",

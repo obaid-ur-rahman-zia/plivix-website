@@ -11,12 +11,12 @@ export const faqs = [
     published: true,
   },
   {
-    question: "Do you work with clients outside Bangladesh?",
-    question_bn: "আপনারা কি বাংলাদেশের বাইরের ক্লায়েন্টদের সাথে কাজ করেন?",
+    question: "Do you work with clients outside Bangladesh and Pakistan?",
+    question_bn: "আপনারা কি বাংলাদেশ ও পাকিস্তানের বাইরের ক্লায়েন্টদের সাথে কাজ করেন?",
     answer:
-      "Yes. We work remotely with clients in different time zones, hold calls in English or Bangla, and can invoice in USD or BDT.",
+      "Yes. We work remotely with clients in different time zones, hold calls in English, Bangla or Urdu, and can invoice in USD, BDT or PKR.",
     answer_bn:
-      "হ্যাঁ। আমরা বিভিন্ন টাইম জোনের ক্লায়েন্টের সাথে রিমোটলি কাজ করি, ইংরেজি বা বাংলায় কল করি এবং ডলার বা টাকায় ইনভয়েস দিতে পারি।",
+      "হ্যাঁ। আমরা বিভিন্ন টাইম জোনের ক্লায়েন্টের সাথে রিমোটলি কাজ করি, ইংরেজি, বাংলা বা উর্দুতে কল করি এবং ডলার, টাকা বা পাকিস্তানি রুপিতে ইনভয়েস দিতে পারি।",
     order_index: 2,
     published: true,
   },
