@@ -22,6 +22,8 @@ export default function SiteSettingsPanel() {
   const [address, setAddress] = useState("");
   const [location_tagline, setLocationTagline] = useState("");
   const [hours, setHours] = useState("");
+  const [phone_bd, setPhoneBd] = useState("");
+  const [phone_pk, setPhonePk] = useState("");
   const [socialsForm, setSocialsForm] = useState("");
 
   const load = useCallback(async () => {
@@ -37,6 +39,8 @@ export default function SiteSettingsPanel() {
       setAddress(row.address ?? "");
       setLocationTagline(row.location_tagline ?? "");
       setHours(row.hours ?? "");
+      setPhoneBd(row.phone_bd ?? "");
+      setPhonePk(row.phone_pk ?? "");
       setSocialsForm(socialsObjectToFormString(row.socials));
     } catch (e) {
       setError(e.message || "Load failed");
@@ -72,6 +76,8 @@ export default function SiteSettingsPanel() {
           address: address.trim() || null,
           location_tagline: location_tagline.trim() || null,
           hours: hours.trim() || null,
+          phone_bd: phone_bd.trim() || null,
+          phone_pk: phone_pk.trim() || null,
           socials,
         }),
       });
@@ -142,6 +148,26 @@ export default function SiteSettingsPanel() {
               onChange={(e) => setHours(e.target.value)}
               className={base}
               placeholder="Mon – Fri · 9–5"
+            />
+          </div>
+          <div className="space-y-1">
+            <label className="block text-xs font-medium text-[var(--color-fg-muted)]">Phone · Bangladesh</label>
+            <input
+              type="tel"
+              value={phone_bd}
+              onChange={(e) => setPhoneBd(e.target.value)}
+              className={base}
+              placeholder="+880 1641 682637"
+            />
+          </div>
+          <div className="space-y-1">
+            <label className="block text-xs font-medium text-[var(--color-fg-muted)]">Phone · Pakistan</label>
+            <input
+              type="tel"
+              value={phone_pk}
+              onChange={(e) => setPhonePk(e.target.value)}
+              className={base}
+              placeholder="+92 370 6014905"
             />
           </div>
         </div>

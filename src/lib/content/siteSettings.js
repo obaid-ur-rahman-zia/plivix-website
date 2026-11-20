@@ -8,6 +8,8 @@ export const defaultSiteSettings = {
   address: "",
   location_tagline: "" /* empty = bilingual default from i18n */,
   hours: "",
+  phone_bd: "+880 1641 682637",
+  phone_pk: "+92 370 6014905",
   socials: {
     linkedin: "https://www.linkedin.com/company/plivix",
     instagram: "https://www.instagram.com/plivix.technologies/",

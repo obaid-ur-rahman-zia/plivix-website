@@ -113,3 +113,7 @@ update public.site_settings set hours = null
 -- Bengali fields for team members (About page).
 alter table public.team add column if not exists role_bn text;
 alter table public.team add column if not exists bio_bn text;
+
+-- Contact phone numbers per country (site settings).
+alter table public.site_settings add column if not exists phone_bd text;
+alter table public.site_settings add column if not exists phone_pk text;

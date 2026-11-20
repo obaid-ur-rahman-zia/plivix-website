@@ -164,6 +164,10 @@ export default async function RootLayout({ children }) {
               url: "https://www.plivix-tech.com",
               logo: "https://www.plivix-tech.com/icon-512.png",
               email: siteSettings.contact_email,
+              contactPoint: [
+                { "@type": "ContactPoint", contactType: "sales", telephone: siteSettings.phone_bd, areaServed: "BD", availableLanguage: ["en", "bn"] },
+                { "@type": "ContactPoint", contactType: "sales", telephone: siteSettings.phone_pk, areaServed: "PK", availableLanguage: ["en", "ur"] },
+              ],
               areaServed: ["Bangladesh", "Pakistan", "Worldwide"],
               address: { "@type": "PostalAddress", addressCountry: "BD" },
               location: [

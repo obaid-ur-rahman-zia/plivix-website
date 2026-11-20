@@ -315,6 +315,9 @@ const en = {
   sticky: { talk: "Get a free quote" },
   loc: {
     tagline: "Bangladesh · Pakistan · Serving clients worldwide",
+    bd: "Bangladesh",
+    pk: "Pakistan",
+    phone: "Phone",
     hours: "Sun – Thu · 9:00 – 18:00 (UTC+6)",
   },
 };
@@ -630,6 +633,9 @@ const bn = {
   sticky: { talk: "ফ্রি কোটেশন নিন" },
   loc: {
     tagline: "বাংলাদেশ · পাকিস্তান · সারা বিশ্বের ক্লায়েন্টদের সেবা দিই",
+    bd: "বাংলাদেশ",
+    pk: "পাকিস্তান",
+    phone: "ফোন",
     hours: "রবি – বৃহস্পতি · সকাল ৯টা – সন্ধ্যা ৬টা (UTC+6)",
   },
 };

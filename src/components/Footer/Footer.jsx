@@ -96,6 +96,22 @@ export default function Footer() {
             >
               {email}
             </a>
+            {[
+              [t("loc.bd"), settings.phone_bd],
+              [t("loc.pk"), settings.phone_pk],
+            ]
+              .filter(([, n]) => n)
+              .map(([country, n]) => (
+                <a
+                  key={country}
+                  href={`tel:${String(n).replace(/[^+\d]/g, "")}`}
+                  data-cursor="hover"
+                  className="text-sm text-[var(--color-fg)] underline-grow"
+                >
+                  <span className="text-[var(--color-fg-muted)]">{country} · </span>
+                  {n}
+                </a>
+              ))}
             <div className="text-sm text-[var(--color-fg-muted)] whitespace-pre-line">
               {locationLine}
               {settings.address?.trim() ? (

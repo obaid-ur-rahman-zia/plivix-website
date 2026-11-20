@@ -21,8 +21,11 @@ export default function ContactPage() {
     const locLine = site.location_tagline?.trim() || t("loc.tagline");
     const addr = site.address?.trim();
     const locationValue = addr ? `${locLine}\n\n${addr}` : locLine;
+    const tel = (n) => `tel:${String(n).replace(/[^+\d]/g, "")}`;
     return [
       { label: t("contact.email"), value: email, href: `mailto:${email}` },
+      ...(site.phone_bd ? [{ label: `${t("loc.phone")} · ${t("loc.bd")}`, value: site.phone_bd, href: tel(site.phone_bd) }] : []),
+      ...(site.phone_pk ? [{ label: `${t("loc.phone")} · ${t("loc.pk")}`, value: site.phone_pk, href: tel(site.phone_pk) }] : []),
       { label: t("contact.hours"), value: hours },
       { label: t("contact.location"), value: locationValue },
     ];

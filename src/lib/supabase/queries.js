@@ -181,6 +181,8 @@ function mergeSiteSettings(row) {
   }
   if (/^remote\s*[·.-]\s*global$/i.test((merged.location_tagline || "").trim())) merged.location_tagline = "";
   if (/utc\+5/i.test(merged.hours || "")) merged.hours = "";
+  merged.phone_bd = (row?.phone_bd || "").trim() || defaultSiteSettings.phone_bd;
+  merged.phone_pk = (row?.phone_pk || "").trim() || defaultSiteSettings.phone_pk;
   return merged;
 }
 
